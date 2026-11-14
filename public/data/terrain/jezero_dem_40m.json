@@ -1,0 +1,17 @@
+{
+ "source_product": "M20_JezeroCrater_CTXDEM_20m.tif",
+ "source_pds_lid": "urn:nasa:pds:mars2020_ctx_basemap_2021:data:m20_ctxdem_mosaic",
+ "vertical_datum": "elevation of the source DEM (MOLA areoid)",
+ "units": "m",
+ "west": 77.1,
+ "north": 18.85,
+ "east": 78.05,
+ "south": 17.95033745781777,
+ "width": 1408,
+ "height": 1333,
+ "encoding": "RGB PNG, elev_m = (R * 256 + G) / 10 - 3000",
+ "row_order": "north_to_south",
+ "cell": "value[r][c] is the mean over the cell whose NW corner is (north - r*dlat, west + c*dlon)",
+ "min_elev_m": -2921.0,
+ "max_elev_m": -1379.5
+}

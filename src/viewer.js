@@ -52,3 +52,46 @@ export function dynamicShow(viewer) {
   viewer.scene.preRender.addEventListener(() => { for (const [e, f] of items) { const v = !!f(); if (e.show !== v) e.show = v; } });
   return (entity, fn) => { entity.show = !!fn(); items.push([entity, fn]); return entity; };
 }
+
+// ---- Terrain: Mars 2020 CTX DEM mosaic (20 m source, 40 m mesh grid) over Jezero. Elsewhere the surface is the
+// reference spheroid (height 0); the DEM edge is tapered to 0 over 0.6° so there is no cliff at its boundary.
+export let groundH = () => 0;
+/** Position at `h` metres above the terrain surface. */
+export const gdeg = (lon, lat, h = 0) => Cesium.Cartesian3.fromDegrees(lon, lat, groundH(lat, lon) + h);
+
+export async function loadTerrain(viewer) {
+  const meta = await (await fetch('./data/terrain/jezero_dem_40m.json')).json();
+  const bmp = await createImageBitmap(await (await fetch('./data/terrain/jezero_dem_40m.png')).blob(), { colorSpaceConversion: 'none', premultiplyAlpha: 'none' });
+  const cv = document.createElement('canvas'); cv.width = bmp.width; cv.height = bmp.height;
+  const ctx = cv.getContext('2d', { willReadFrequently: true }); ctx.drawImage(bmp, 0, 0);
+  const px = ctx.getImageData(0, 0, bmp.width, bmp.height).data, W = meta.width, H = meta.height, grid = new Float32Array(W * H);
+  for (let i = 0; i < W * H; i++) grid[i] = (px[4 * i] * 256 + px[4 * i + 1]) / 10 - 3000;
+  const dLon = (meta.east - meta.west) / W, dLat = (meta.north - meta.south) / H, TAPER = 0.6;
+  groundH = (lat, lon) => {
+    const x = Math.max(0, Math.min(W - 1, (lon - meta.west) / dLon - 0.5)), y = Math.max(0, Math.min(H - 1, (meta.north - lat) / dLat - 0.5));
+    const c = Math.min(W - 2, Math.floor(x)), r = Math.min(H - 2, Math.floor(y)), fx = x - c, fy = y - r, i = r * W + c;
+    const v = (grid[i] * (1 - fx) + grid[i + 1] * fx) * (1 - fy) + (grid[i + W] * (1 - fx) + grid[i + W + 1] * fx) * fy;
+    const d = Math.hypot(Math.max(meta.west - lon, 0, lon - meta.east), Math.max(meta.south - lat, 0, lat - meta.north));
+    if (d <= 0) return v; if (d >= TAPER) return 0;
+    const k = 1 - d / TAPER; return v * k * k * (3 - 2 * k);
+  };
+  const N = 33, ZERO = new Float32Array(N * N), scheme = new Cesium.GeographicTilingScheme({ ellipsoid: Cesium.Ellipsoid.MARS }), D = Cesium.Math.toDegrees;
+  viewer.terrainProvider = new Cesium.CustomHeightmapTerrainProvider({ width: N, height: N, tilingScheme: scheme, ellipsoid: Cesium.Ellipsoid.MARS,
+    credit: 'Mars 2020 CTX DEM mosaic (JPL/USGS)',
+    callback: (x, y, level) => {
+      const r = scheme.tileXYToRectangle(x, y, level), w = D(r.west), e = D(r.east), s = D(r.south), n = D(r.north);
+      if (e < meta.west - TAPER || w > meta.east + TAPER || n < meta.south - TAPER || s > meta.north + TAPER) return ZERO;
+      const out = new Float32Array(N * N);
+      for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) out[j * N + i] = groundH(n - ((n - s) * j) / (N - 1), w + ((e - w) * i) / (N - 1));
+      return out;
+    } });
+  viewer.scene.globe.depthTestAgainstTerrain = false;
+  return { meta, heightAt: groundH };
+}
+
+/** MGS MOLA MEGDR megt44n000hb colour-coded elevation image (PDS ODE rendering), cropped to MC-13. */
+export function addMolaLayer(viewer) {
+  const layer = viewer.imageryLayers.addImageryProvider(new Cesium.SingleTileImageryProvider({ url: './data/mola_mc13_altcolor.jpg', tileWidth: 2880, tileHeight: 1920,
+    rectangle: Cesium.Rectangle.fromDegrees(45, 0, 90, 30), credit: 'NASA / MGS MOLA Science Team / PDS Geosciences Node' }));
+  layer.alpha = 0.6; layer.show = false; return layer;
+}

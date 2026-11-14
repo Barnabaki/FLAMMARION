@@ -125,7 +125,7 @@ export function createSim({ plan, stream, startUtcMs }) {
       if (S.s >= next.cum_m - 1e-6) { S.wp++; S.stopLeft = L[S.wp].stop_s; }
     }
     S.moving = moving; S.status = status; S.frame = frame; S.active = res.active; S.decision = res.decision;
-    S.battery_pct = batterySoc(t, S.s, env.air_temp_c); S.here = here; S.lead = lead;
+    S.battery_pct = batterySoc(t, S.s, env.air_temp_c); S.here = here; S.lead = lead; S.elev_m = plan.elevAtS(S.s); S.slope_deg = plan.slopeAtS(S.s);
     S.utcMs = startUtcMs + t * 1000;
     return S;
   }

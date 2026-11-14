@@ -26,23 +26,34 @@ Open the printed URL (default http://localhost:5173). Other scripts:
 | --- | --- |
 | `npm run build` / `npm run preview` | Production build into `dist/` and local preview |
 | `npm run generate` | Regenerate every file in `public/data/` and `examples/` (deterministic, seeded) |
-| `npm test` | 11 checks: geodesy, Mars24 reference epoch, quadrangle geometry, 30 cm localization model, decision engine, all anomaly scenarios, drone-schema validation |
+| `npm test` | 13 checks: geodesy, Mars24 reference epoch, quadrangle geometry, 30 cm localization model, decision engine, all anomaly scenarios, drone-schema validation, DEM and MEDA consistency with the source files |
+| `python3 scripts/build_app_assets.py` | Rebuild the derived assets (terrain grid, route DEM crop, weather tables, MOLA crop) from `data/source/`; needs numpy, pillow, tifffile, imagecodecs. Outputs are committed. |
 
 `npm install` copies Cesium's runtime assets to `public/cesiumStatic/` (git-ignored) via `scripts/copy-cesium.mjs`.
 
 ## What is in the demo
 
-- **Module A** — realistic globe (Viking colour mosaic); click the planet for the 30 official Mars Chart quadrangles; select MC-13 → NE quadrant → Jezero; top-down HiRISE/CTX terrain map with the proposed route, waypoints, geodesic distance, elevation profile and seasonal environment. Breadcrumb is clickable at every level.
+- **Module A** — realistic globe (Viking colour mosaic); click the planet for the 30 official Mars Chart quadrangles; select MC-13 → NE quadrant → Jezero; optional MOLA elevation overlay; top-down HiRISE/CTX map on the CTX DEM terrain with the proposed route, waypoints, geodesic distance, DEM elevation profile and MEDA environment. Breadcrumb is clickable at every level.
 - **Module B** — forecast time-lapse along the route, predicted distance / time / battery, six explicit GO / NO-GO criteria with the driver named on NO-GO, a what-if dust event, and **Start Mission**.
 - **Module C** — replay of the stored telemetry stream at 1×–240× with scrubbing; Screen 1 (bird's-eye, camera follows the crew, free orbit) and Screen 2 (first person); crew + scout drone with localization, comm links, clocks (LMST / LTST / UTC), navigation, milestones, terrain, E-field, life support, comms; decision engine (ABORT / HOLD / PROCEED / REROUTE) with log; eight injectable anomalies including the required dust-devil → alert to crew + habitat → HOLD.
-- **Provenance** — every value carries a tag (SATELLITE, IAU, COMPUTED, MODELLED, SIMULATED, EMULATED, DEMO; HISTORIC is supported but unused, see below). Global *Data sources* panel in the top bar.
+- **Provenance** — every value carries a tag (SATELLITE, IAU, COMPUTED, HISTORIC, MODELLED, SIMULATED, EMULATED, DEMO). Global *Data sources* panel in the top bar.
 
-## Known gaps against the brief — read before demoing
+## Data status
 
-1. **Weather is MODELLED, not HISTORIC.** The MEDA/REMS PDS archive could not be reached from the build environment, so the weather is a diurnal model fitted to published MEDA ranges and is tagged MODELLED everywhere. Drop real MEDA hourly means into `public/data/weather_sol.json` with `"provenance": "HISTORIC"` and the badges follow (schema in `DATA_SOURCES.md`).
-2. **No MOLA terrain mesh.** No DEM tile service was reachable; the surface is the IAU reference spheroid with real orbital imagery draped on it. Waypoint elevations are approximate and tagged MODELLED.
-3. **CTX source.** Jezero CTX comes from the USGS mosaics served by NASA Mars Trek, not from the Murray Lab global mosaic (no public tile endpoint).
-4. **CRISM composition** is not integrated; terrain class/quality per leg is an interpretation of the HiRISE imagery (MODELLED).
+Integrated from the team's data pull (`data/source/`, see `DATA_SOURCES.md`):
+
+- **Weather — HISTORIC.** Air temperature, ground temperature, pressure, wind speed and UV are Perseverance/MEDA measurements (NASA PDS, sols 44–51, Ls 26–30°), averaged per local-true-solar-time hour and replayed by local time. The mission clock is a replay epoch (Perseverance sol 47, 2021-04-07).
+- **Terrain — SATELLITE.** The Jezero terrain mesh, waypoint elevations, elevation profile and slopes come from the Mars 2020 CTX DEM mosaic (20 m).
+- **MOLA.** The MGS MOLA MEGDR colour-coded elevation image is an optional overlay on MC-13.
+- **REMS (Gale).** Shown in Pre-mission as a labelled reference only.
+
+Still open — read before demoing:
+
+1. **Wind direction, humidity, dust opacity τ, vortex rate and total solar flux are MODELLED** — they were not in the MEDA pull. τ and vortex rate feed two of the six GO / NO-GO criteria.
+2. **MEDA wind is sparse at night** (1–3 sols per hour bin outside 11:00–16:00 LTST).
+3. **No numeric MOLA grid** was supplied (only its colour image), so outside Jezero the terrain is the reference spheroid; the DEM edge is tapered to it over 0.6°.
+4. **Murray Lab CTX mosaic** is still missing; Jezero CTX comes from the USGS mosaics on NASA Mars Trek.
+5. **CRISM composition** is not integrated; terrain class/quality per leg is an interpretation of the HiRISE imagery (MODELLED).
 
 Details and every other assumption: `ASSUMPTIONS.md`.
 
@@ -61,12 +72,17 @@ src/
     mars.js        spheroid constants, Vincenty geodesic, seeded PRNG, 30 cm σ
     marsTime.js    Mars24 (MSD, MTC, LMST, LTST, Ls, Sun elevation)
     quadrangles.js MC-01…MC-30, quadrants, IAU features of MC-13 NE
-    weather.js     Jezero diurnal climatology (MODELLED)
+    weather.js     MEDA hourly means (HISTORIC) + modelled channels; REMS reference
+    weatherTable.js, demRoute.js   generated from data/source by build_app_assets.py
+    dem.js         elevation lookup on the 20 m CTX DEM crop
     mission.js     waypoints, vehicle model, nominal plan, GO criteria
     decision.js    flags, thresholds, priority, debounce / hold-off
     sim.js         tick-by-tick replay + anomaly scenarios + drone message
 scripts/generate-data.mjs   seeded generator for public/data and examples
-public/data/       route.geojson, telemetry.ndjson, weather_sol.json, dustdevil_scenario.*
+scripts/build_app_assets.py derives app assets from data/source
+scripts/pull/      the team's download/aggregation scripts (MEDA, REMS, DEM)
+data/source/       pulled source data: dem/, weather/, mola/, SOURCES.json
+public/data/       route.geojson, telemetry.ndjson, weather_sol.json, rems_gale_reference.json, dustdevil_scenario.*, terrain/, mola_mc13_altcolor.jpg
 drone_message_schema.json   proposed drone downlink format (+ examples/)
 tests/all.test.mjs
 ```

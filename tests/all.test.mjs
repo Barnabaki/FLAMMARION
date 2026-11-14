@@ -6,7 +6,9 @@ import { geodesic, MARS, LOC_SIGMA_M, LOC_R95_M } from '../src/lib/mars.js';
 import { marsTime, hms } from '../src/lib/marsTime.js';
 import { QUADRANGLES, quadrants, findQuadrangle, contains, JEZERO } from '../src/lib/quadrangles.js';
 import { createDecisionEngine, evaluateFlags, RULES } from '../src/lib/decision.js';
-import { buildPlan, missionStartUtcMs, SITE } from '../src/lib/mission.js';
+import { buildPlan, missionStartUtcMs, m2020Sol, LANDING_UTC_MS, SITE } from '../src/lib/mission.js';
+import { elevAt } from '../src/lib/dem.js';
+import { SOL_TABLE, weatherAt } from '../src/lib/weather.js';
 import { createSim, INJECTIONS } from '../src/lib/sim.js';
 
 const rd = (f) => readFileSync(new URL('../' + f, import.meta.url), 'utf8');
@@ -24,9 +26,10 @@ test('Mars24 reference epoch 2000-01-06 00:00 UTC', () => {
   assert.equal(r.msd.toFixed(5), '44795.99976'); assert.equal(hms(r.mtc), '23:59:39');
   assert.ok(Math.abs(r.ls - 277.18758) < 1e-4); assert.ok(Math.abs(r.eotDeg + 5.18774) < 1e-4);
 });
-test('mission epoch: 09:30 LMST at Jezero, Ls ≈ 45°, MY 36', () => {
+test('mission epoch: 09:30 LMST at Jezero, Perseverance sol 47 (inside MEDA sols 44–51), MY 36', () => {
   const r = marsTime(missionStartUtcMs(), SITE.lon, SITE.lat);
-  assert.ok(Math.abs(r.lmst - 9.5) < 0.001); assert.ok(Math.abs(r.ls - 45) < 1); assert.equal(r.marsYear, 36);
+  assert.ok(Math.abs(r.lmst - 9.5) < 0.001); assert.ok(r.ls > 26 && r.ls < 30); assert.equal(r.marsYear, 36);
+  assert.equal(m2020Sol(missionStartUtcMs()), 47); assert.equal(m2020Sol(LANDING_UTC_MS), 0);
 });
 test('30 MC quadrangles tile the sphere exactly once; Jezero in MC-13 NE', () => {
   assert.equal(QUADRANGLES.length, 30);
@@ -93,4 +96,16 @@ test('route file: geodesic total equals sum of segments and matches the plan', (
   const g = JSON.parse(rd('public/data/route.geojson')), c = g.features[0].geometry.coordinates;
   let sum = 0; for (let i = 1; i < c.length; i++) sum += geodesic(c[i - 1][1], c[i - 1][0], c[i][1], c[i][0]).distance;
   assert.ok(Math.abs(sum - g.properties.total_distance_m) < 0.1); assert.equal(g.properties.label, 'Proposed route');
+});
+test('DEM: landing-site elevation matches the source DEM report; route stays inside the crop', () => {
+  const rep = JSON.parse(rd('data/source/dem/dem_report.json')).landing_site_check;
+  assert.ok(Math.abs(elevAt(rep.lat, rep.lon) - rep.ctx20m_m) < 0.5, `${elevAt(rep.lat, rep.lon)} vs ${rep.ctx20m_m}`);
+  const p = buildPlan(); assert.ok(p.profile.every((q) => q.elev != null && q.elev > -2700 && q.elev < -2400)); assert.ok(p.max_slope_deg < 15);
+});
+test('weather: HISTORIC channels equal the MEDA hourly means from the PDS pull', () => {
+  const recs = JSON.parse(rd('data/source/weather/weather_historic.json')).filter((r) => r.source_instrument.startsWith('MEDA') && r.ltst === '14:00:00');
+  const mean = recs.reduce((a, r) => a + r.ambient_temp_c, 0) / recs.length;
+  assert.ok(Math.abs(weatherAt(SOL_TABLE, 14.5, 60).air_temp_c - mean) < 0.01);
+  assert.equal(SOL_TABLE.provenance.air_temp_c, 'HISTORIC'); assert.equal(SOL_TABLE.provenance.tau, 'MODELLED');
+  assert.ok(stream.every((r) => r.env.air_temp_c >= Math.min(...SOL_TABLE.air_temp_c) && r.env.air_temp_c <= Math.max(...SOL_TABLE.air_temp_c)));
 });

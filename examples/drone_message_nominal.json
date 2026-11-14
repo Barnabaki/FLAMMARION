@@ -1,33 +1,33 @@
 {
   "schema": "flammarion.drone/1.0",
   "msg_id": 200,
-  "timestamp_utc": "2021-05-15T21:51:51.000Z",
+  "timestamp_utc": "2021-04-07T21:27:07.000Z",
   "mission_elapsed_s": 1000,
   "provenance": "SIMULATED",
   "pose": {
-    "lat": 18.45189229423888,
-    "lon": 77.44481968520194,
-    "alt_agl_m": 11.9,
+    "lat": 18.451898648747658,
+    "lon": 77.44481526409513,
+    "alt_agl_m": 12.5,
     "heading_deg": 301.33244847891416,
-    "ground_speed_ms": 1.12,
+    "ground_speed_ms": 1.34,
     "position_sigma_m": 0.12256169479609047,
-    "lead_distance_m": 103.8
+    "lead_distance_m": 104
   },
   "scan_footprint": {
     "shape": "circle",
-    "centre_lat": 18.45189229423888,
-    "centre_lon": 77.44481968520194,
+    "centre_lat": 18.451898648747658,
+    "centre_lon": 77.44481526409513,
     "radius_m": 60,
     "gsd_cm": 2
   },
   "atmosphere": {
-    "dust_opacity_tau": 0.438,
+    "dust_opacity_tau": 0.462,
     "tau_sigma": 0.05
   },
   "dust_devils": [],
   "terrain_updates": [],
   "link": {
-    "rssi_dbm": -55.3,
+    "rssi_dbm": -54.4,
     "latency_ms": 50
   }
 }

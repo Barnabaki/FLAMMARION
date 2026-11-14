@@ -17,38 +17,37 @@ CRS for all spatial data: IAU 2000 Mars (a = 3 396 190 m, b = 3 376 200 m), plan
 | Mars24 algorithm (Allison & McEwen 2000) | — | COMPUTED | https://www.giss.nasa.gov/tools/mars24/help/algorithm.html | Published algorithm | Implemented in `src/lib/marsTime.js`; unit-tested against the published 2000-01-06 reference values |
 | Route distances | — | COMPUTED | Vincenty inverse geodesic on the Mars spheroid, `src/lib/mars.js` | — | Summed per segment |
 
+## From the team's data pull (`data/source/`)
+
+| Dataset | Resolution | Tag | Source | Files | Processing |
+| --- | --- | --- | --- | --- | --- |
+| Perseverance MEDA calibrated/derived records (CAL_ATS, CAL_TIRS, DER_PS, DER_WS, CAL_RDS), sols 44–51 | 1–2 Hz source → hourly means per LTST hour | HISTORIC | NASA PDS Atmospheres, `urn:nasa:pds:mars2020_meda` (file list in `data/source/SOURCES.json`) | `data/source/weather/weather_historic.json` | `scripts/pull/build_weather.py` (hourly means per sol); `scripts/build_app_assets.py` averages the 8 sols per hour → `src/lib/weatherTable.js`. Air temp = mean of ATS mast sensors 1–3 (~1.45 m); UV = RDS_TOP_3 (250–400 nm). |
+| Curiosity REMS MODRDR, MSL sols 50–54, **Gale crater** | hourly means per LTST hour | HISTORIC | NASA PDS Atmospheres, `MSLREM_1001` | same file | `scripts/pull/rems.py`; shown as reference only, never used in decisions |
+| Mars 2020 CTX DEM mosaic `M20_JezeroCrater_CTXDEM_20m.tif` | 20 m | SATELLITE | JPL/USGS, `urn:nasa:pds:mars2020_ctx_basemap_2021:data:m20_ctxdem_mosaic` | `data/source/dem/jezero_dem_clipped_{fullcrater,requested}.tif`, 512² grids, heightmaps, hillshade, `dem_report.json` | `scripts/pull/build_dem.py` (clip, cross-check vs HRSC–MOLA 200 m: landing site −2567.1 m vs −2573 m). `build_app_assets.py` → 40 m terrain grid `public/data/terrain/jezero_dem_40m.png` (RGB-encoded, 0.1 m steps) and a native 20 m crop around the route `src/lib/demRoute.js`. |
+| MGS MOLA MEGDR `megt44n000hb` colour-coded elevation image | 128 px/deg, 0–90°E 0–44°N | SATELLITE | PDS Geosciences Node, Orbital Data Explorer | `data/source/mola/` | Cropped to MC-13 (45–90°E, 0–30°N), resampled to 2880×1920 → `public/data/mola_mc13_altcolor.jpg`. Image only: no elevation values, no legend. |
+
+Vertical datum: DEM elevations are relative to the MOLA areoid. The 3D scene uses them as heights above the reference spheroid — a constant-offset simplification that does not affect slopes or relative heights.
+
 ## Modelled, simulated, emulated
 
 | Data | Tag | How it is produced | File |
 | --- | --- | --- | --- |
-| Jezero diurnal weather (air/ground temperature, pressure, wind, humidity, τ, vortex rate) at Ls ≈ 45°, MY 36 | MODELLED | Hourly table shaped to the ranges published from MEDA: Rodriguez-Manfredi et al. 2023, *Nat. Geosci.* 16, 19–28 (https://doi.org/10.1038/s41561-022-01084-0); Newman et al. 2022, *Sci. Adv.* 8, eabn3783. **Not PDS records.** | `src/lib/weather.js`, `public/data/weather_sol.json` |
-| Surface solar flux | MODELLED | Sun elevation (Mars24) × simple dust attenuation | `src/lib/weather.js` |
-| Waypoint elevations, terrain class and quality | MODELLED | Approximate values / visual interpretation of the HiRISE mosaic; not sampled from a DEM | `src/lib/mission.js` |
-| One-way light time (≈ 17 min 18 s) | MODELLED | Constant, approximate Earth–Mars distance for mid-May 2021 | generator |
+| Wind direction, relative humidity, dust optical depth τ, convective-vortex rate | MODELLED | Hourly tables shaped to ranges published from MEDA (Rodriguez-Manfredi et al. 2023, *Nat. Geosci.* 16, 19–28, https://doi.org/10.1038/s41561-022-01084-0; Newman et al. 2022, *Sci. Adv.* 8, eabn3783). Not in the data pull. | `src/lib/weather.js` |
+| Total surface solar flux | MODELLED | Sun elevation (Mars24) × simple dust attenuation | `src/lib/weather.js` |
+| Wind gust | SIMULATED | 1.45 × MEDA hourly wind + seeded noise | `public/data/telemetry.ndjson` |
+| Terrain class and quality per leg | MODELLED | Visual interpretation of the HiRISE mosaic | `src/lib/mission.js` |
+| One-way light time (≈ 17 min 18 s) | MODELLED | Constant placeholder; not recomputed for the 2021-04-07 replay epoch | generator |
 | Proposed route, science stops | DEMO | Drawn by hand on the HiRISE mosaic along low-relief terrain | `public/data/route.geojson` |
 | Vehicle speed, battery | EMULATED | Simple energy model (hotel load + drive energy + heater) | `src/lib/mission.js` |
-| Telemetry noise, life support, comms, radiation, electric field, localization error | SIMULATED | Seeded AR(1) / Gaussian generator, seed 20210515 | `public/data/telemetry.ndjson` |
+| Life support, comms, radiation, electric field, localization error | SIMULATED | Seeded AR(1) / Gaussian generator, seed 20210515 | `public/data/telemetry.ndjson` |
 | Drone messages, dust devils, terrain updates | SIMULATED | `src/lib/sim.js`; format in `drone_message_schema.json` | `public/data/dustdevil_scenario.ndjson`, `examples/` |
 
 ## Named in the brief but not integrated
 
 | Dataset | Status |
 | --- | --- |
-| Perseverance MEDA (PDS, atmos.nmsu.edu) | Not reachable from the build environment (TLS chain could not be verified). Weather is MODELLED instead. |
-| Curiosity REMS (Gale) | Not loaded. Would be a supplementary reference only (Gale is ~3,760 km from Jezero). |
-| MGS MOLA MEGDR / HRSC / HiRISE DTMs | No reachable tile or query service; terrain is the reference spheroid. |
-| Murray Lab global CTX mosaic | No public tile endpoint; USGS CTX Jezero mosaics from Mars Trek are used instead. |
+| Numeric MGS MOLA MEGDR grid (`megt44n000hb.img`) | Not in the pull (only the colour image). Terrain outside Jezero is the reference spheroid. |
+| Murray Lab global CTX mosaic (`MurrayLab_GlobalCTXMosaic_V01_E-076_N16`) | Not supplied. USGS CTX Jezero mosaics from Mars Trek are used instead. In Murray Lab tile names `E-076` appears to mean 76°W; Jezero is at 77.5°E, which would be tile `E076_N16` — verify before pulling it. |
+| MEDA dust opacity, humidity, wind direction | Not in the pull; modelled. |
 | CRISM / TES / OMEGA composition | Not integrated. |
-
-### Swapping in real MEDA data
-
-`public/data/weather_sol.json` — arrays of 24 hourly means indexed by LMST hour:
-
-```json
-{ "site": "…", "ls": 45, "marsYear": 36, "provenance": "HISTORIC",
-  "hours": [0, 1, …, 23],
-  "air_temp_c": […], "ground_temp_c": […], "wind_ms": […], "wind_dir_deg": […],
-  "rh_pct": […], "vortex_per_h": […], "tau": 0.45 }
-```
-
-Module B reads the file and uses its `provenance` for the badges. The Module A environment block and the Module C weather badges are currently hard-wired to the built-in table / MODELLED and need the same switch; rerun `npm run generate` after changing `src/lib/weather.js` so the telemetry stream matches.
+| Spirit dust-devil statistics | Not integrated; the scenario is one scripted vortex. |

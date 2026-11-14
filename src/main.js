@@ -1,5 +1,5 @@
 import './style.css';
-import { createViewer, Cesium, deg } from './viewer.js';
+import { createViewer, Cesium, deg, loadTerrain, addMolaLayer } from './viewer.js';
 import { h, badge, PROVENANCE } from './ui/dom.js';
 import { buildPlan, missionStartUtcMs } from './lib/mission.js';
 import { initA } from './moduleA.js';
@@ -9,10 +9,12 @@ import { SOURCES } from './sources.js';
 
 const ui = document.getElementById('ui');
 const { viewer, layers } = createViewer('globe');
+layers.mola = addMolaLayer(viewer);
+const terrain = await loadTerrain(viewer);
 
 // Shared application state. `route` is the single route object handed A → B → C.
 const app = {
-  viewer, layers, ui, Cesium, stage: null, plan: buildPlan(), startUtcMs: missionStartUtcMs(),
+  viewer, layers, ui, Cesium, terrain, stage: null, plan: buildPlan(), startUtcMs: missionStartUtcMs(),
   slots: { left: h('.slot'), right: h('.slot'), bottom: h('.slot'), center: h('.slot') },
   crew: { lat: 0, lon: 0, show: false }, handlers: {},
   setStage, flyTo,
@@ -55,6 +57,7 @@ function setStage(id) {
   app.stage = id;
   for (const s of Object.values(app.slots)) s.replaceChildren();
   renderCrumbs();
+  layers.mola.show = false;
   if (id === 'pre' || id === 'intra') layers.ctx_regional.show = layers.ctx.show = layers.hirise.show = true;
   if (id === 'pre') modB.enter(); else if (id === 'intra') modC.enter(); else modA.enter(id, prev);
 }
@@ -66,14 +69,15 @@ function showSources() {
       h('.legend', {}, Object.entries(PROVENANCE).map(([k, v]) => h('span', { style: 'margin-right:10px' }, badge(k), ' ', h('small', { style: 'color:var(--dim)' }, v)))),
       h('table', { style: 'margin-top:14px' }, h('tr', {}, ['Dataset', 'Used for', 'Tag', 'Source / licence'].map((t) => h('th', {}, t))),
         SOURCES.map((s) => h('tr', {}, h('td', {}, s.name), h('td', {}, s.use), h('td', {}, badge(s.tag)), h('td', {}, h('a', { href: s.url, target: '_blank', rel: 'noopener' }, s.org), h('br'), h('small', { style: 'color:var(--dim)' }, s.licence))))),
-      h('p.note', { style: 'margin-top:12px' }, 'Not integrated in this build: MOLA MEGDR elevation mesh (no DEM tile service reachable — terrain is the reference spheroid with real imagery draped), MEDA/REMS PDS records (weather is a model fitted to published MEDA ranges), CRISM composition maps. See DATA_SOURCES.md.'),
+      h('p.note', { style: 'margin-top:12px' }, 'Still modelled or missing: wind direction, humidity, dust opacity and vortex rate (not in the MEDA pull); numeric MOLA MEGDR grid (only its colour image was supplied — the terrain mesh is the CTX DEM, Jezero only); Murray Lab CTX mosaic; CRISM composition. See DATA_SOURCES.md.'),
       h('.row', { style: 'justify-content:flex-end' }, h('button', { onclick: () => m.remove() }, 'Close'))));
   ui.append(m);
 }
 
-// cursor lat/lon read-out
+// cursor lat/lon read-out (ray-cast against the terrain, falling back to the spheroid)
+const pickGround = (pos) => { const ray = viewer.camera.getPickRay(pos); return (ray && viewer.scene.globe.pick(ray, viewer.scene)) || viewer.camera.pickEllipsoid(pos, Cesium.Ellipsoid.MARS); };
 new Cesium.ScreenSpaceEventHandler(viewer.canvas).setInputAction((e) => {
-  const p = viewer.camera.pickEllipsoid(e.endPosition, Cesium.Ellipsoid.MARS);
+  const p = pickGround(e.endPosition);
   if (!p) { cursor.textContent = ''; return; }
   const c = Cesium.Cartographic.fromCartesian(p, Cesium.Ellipsoid.MARS);
   const lat = Cesium.Math.toDegrees(c.latitude), lon = (Cesium.Math.toDegrees(c.longitude) + 360) % 360;
@@ -81,7 +85,7 @@ new Cesium.ScreenSpaceEventHandler(viewer.canvas).setInputAction((e) => {
   app.handlers.move?.(lat, lon, e.endPosition);
 }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 new Cesium.ScreenSpaceEventHandler(viewer.canvas).setInputAction((e) => {
-  const p = viewer.camera.pickEllipsoid(e.position, Cesium.Ellipsoid.MARS);
+  const p = pickGround(e.position);
   if (!p) return;
   const c = Cesium.Cartographic.fromCartesian(p, Cesium.Ellipsoid.MARS);
   app.handlers.click?.(Cesium.Math.toDegrees(c.latitude), (Cesium.Math.toDegrees(c.longitude) + 360) % 360, e.position);

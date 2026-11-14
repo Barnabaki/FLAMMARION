@@ -1,12 +1,12 @@
 // MODULE C — Intra-mission. Simulated real-time replay of the stored telemetry stream with drone scouting,
 // localization, decision engine and anomaly alerts. Two screens: bird's-eye (third person) and first person.
-import { Cesium, deg, dynamicShow } from './viewer.js';
+import { Cesium, gdeg, dynamicShow } from './viewer.js';
 import { h, badge, metric, fmtDist, fmtDur, toast } from './ui/dom.js';
 import { marsTime, hms } from './lib/marsTime.js';
-import { SITE } from './lib/mission.js';
+import { SITE, m2020Sol } from './lib/mission.js';
 import { FLAGS, RULES } from './lib/decision.js';
 import { createSim, INJECTIONS } from './lib/sim.js';
-import { LOC_R95_M } from './lib/mars.js';
+import { LOC_R95_M, offset } from './lib/mars.js';
 
 const FONT = '"Helvetica Neue", Helvetica, Arial, sans-serif';
 const SPEEDS = [1, 10, 60, 240];
@@ -20,26 +20,25 @@ export function initC(app) {
   const on = () => active, dd = () => (active && S().frame.drone.dust_devils[0]) || null, obs = () => (active && S().frame.drone.terrain_updates[0]) || null;
   const cb = (f) => new Cesium.CallbackProperty(f, false);
   const lbl = (text, color = Cesium.Color.WHITE, dy = 18) => ({ text, font: `500 10px ${FONT}`, pixelOffset: new Cesium.Cartesian2(0, dy), fillColor: color, outlineColor: Cesium.Color.BLACK, outlineWidth: 3, style: Cesium.LabelStyle.FILL_AND_OUTLINE, disableDepthTestDistance: Number.POSITIVE_INFINITY });
+  const ring = (lat, lon, radius, h = 2) => { const pts = []; for (let a = 0; a <= 360; a += 10) { const q = offset(lat, lon, radius * Math.sin((a * Math.PI) / 180), radius * Math.cos((a * Math.PI) / 180)); pts.push(gdeg(q.lon, q.lat, h)); } return pts; };
   // --- scene entities (created once, shown only while the module is active)
   const showIf = dynamicShow(viewer), add = (def, fn) => showIf(viewer.entities.add(def), fn);
-  add({ position: cb(() => deg(R.drone.lon, R.drone.lat, active ? S().frame.drone.pose.alt_agl_m : 12)),
+  add({ position: cb(() => gdeg(R.drone.lon, R.drone.lat, active ? S().frame.drone.pose.alt_agl_m : 12)),
     point: { pixelSize: 9, color: CYAN, outlineColor: Cesium.Color.BLACK, outlineWidth: 1.5, disableDepthTestDistance: Number.POSITIVE_INFINITY }, label: lbl('DRONE', CYAN, -16) }, on);
-  add({ position: cb(() => deg(R.drone.lon, R.drone.lat, 0.4)), ellipse: { semiMajorAxis: 60, semiMinorAxis: 60, height: 0.4, material: CYAN.withAlpha(0.13), outline: true, outlineColor: CYAN.withAlpha(0.6) } }, on);
-  add({ polyline: { positions: cb(() => [deg(R.crew.lon, R.crew.lat, 1.5), deg(R.drone.lon, R.drone.lat, 12)]), width: 1.5, material: new Cesium.PolylineDashMaterialProperty({ color: CYAN.withAlpha(0.8), dashLength: 10 }) } }, on);
-  add({ polyline: { positions: cb(() => [deg(SITE.lon, SITE.lat, 3), deg(R.crew.lon, R.crew.lat, 1.5)]), width: 1,
+  add({ polyline: { positions: cb(() => ring(R.drone.lat, R.drone.lon, 60)), width: 1.5, material: CYAN.withAlpha(0.75) } }, on); // scan footprint
+  add({ polyline: { positions: cb(() => [gdeg(R.crew.lon, R.crew.lat, 1.5), gdeg(R.drone.lon, R.drone.lat, 12)]), width: 1.5, material: new Cesium.PolylineDashMaterialProperty({ color: CYAN.withAlpha(0.8), dashLength: 10 }) } }, on);
+  add({ polyline: { positions: cb(() => [gdeg(SITE.lon, SITE.lat, 3), gdeg(R.crew.lon, R.crew.lat, 1.5)]), width: 1,
     material: new Cesium.PolylineDashMaterialProperty({ color: cb(() => (active && S().frame.comms.local_rssi_dbm < RULES.comms.minRssiDbm ? RED : Cesium.Color.WHITE.withAlpha(0.45))), dashLength: 8 }) } }, on);
   add({ polyline: { width: 3.5, material: Cesium.Color.WHITE, positions: cb(() => {
-    if (!active) return [deg(SITE.lon, SITE.lat), deg(SITE.lon, SITE.lat)];
-    const p = app.plan, s = S().s, pts = p.legs.filter((l) => l.cum_m < s).map((l) => deg(l.lon, l.lat, 0.8)); pts.push(deg(R.crew.lon, R.crew.lat, 0.8)); return pts.length > 1 ? pts : [pts[0], pts[0]]; }) } }, on);
-  add({ position: cb(() => { const d = dd(); return d ? deg(d.lon, d.lat, d.height_m / 2) : deg(SITE.lon, SITE.lat); }),
+    if (!active) return [gdeg(SITE.lon, SITE.lat), gdeg(SITE.lon, SITE.lat)];
+    const p = app.plan, s = S().s, pts = p.legs.filter((l) => l.cum_m < s).map((l) => gdeg(l.lon, l.lat, 0.8)); pts.push(gdeg(R.crew.lon, R.crew.lat, 0.8)); return pts.length > 1 ? pts : [pts[0], pts[0]]; }) } }, on);
+  add({ position: cb(() => { const d = dd(); return d ? gdeg(d.lon, d.lat, d.height_m / 2) : gdeg(SITE.lon, SITE.lat); }),
     cylinder: { length: cb(() => dd()?.height_m ?? 1), topRadius: cb(() => (dd()?.diameter_m ?? 1) * 1.4), bottomRadius: cb(() => (dd()?.diameter_m ?? 1) / 2), material: Cesium.Color.fromCssColorString('#d9b38c').withAlpha(0.5) },
     label: { ...lbl('DUST DEVIL', ORANGE, 0), font: `500 12px ${FONT}` } }, () => !!dd());
-  add({ position: cb(() => { const d = dd(); return d ? deg(d.lon, d.lat, 0.5) : deg(SITE.lon, SITE.lat); }),
-    ellipse: { semiMajorAxis: 120, semiMinorAxis: 120, height: 0.5, material: ORANGE.withAlpha(0.12), outline: true, outlineColor: ORANGE } }, () => !!dd());
-  add({ position: cb(() => { const o = obs(); return o ? deg(o.lon, o.lat, 1) : deg(SITE.lon, SITE.lat); }),
-    point: { pixelSize: 12, color: RED, outlineColor: Cesium.Color.WHITE, outlineWidth: 2, disableDepthTestDistance: Number.POSITIVE_INFINITY }, label: lbl('NEW OBSTACLE', RED, -18),
-    ellipse: { semiMajorAxis: 8, semiMinorAxis: 8, height: 0.5, material: RED.withAlpha(0.25) } }, () => !!obs());
-  add({ position: deg(SITE.lon, SITE.lat, 2), label: lbl('HABITAT', Cesium.Color.WHITE, 30) }, on);
+  add({ polyline: { positions: cb(() => { const d = dd(); return d ? ring(d.lat, d.lon, 120) : ring(SITE.lat, SITE.lon, 1); }), width: 2, material: ORANGE } }, () => !!dd()); // hazard radius
+  add({ position: cb(() => { const o = obs(); return o ? gdeg(o.lon, o.lat, 1) : gdeg(SITE.lon, SITE.lat); }),
+    point: { pixelSize: 12, color: RED, outlineColor: Cesium.Color.WHITE, outlineWidth: 2, disableDepthTestDistance: Number.POSITIVE_INFINITY }, label: lbl('NEW OBSTACLE', RED, -18) }, () => !!obs());
+  add({ position: gdeg(SITE.lon, SITE.lat, 2), label: lbl('HABITAT', Cesium.Color.WHITE, 30) }, on);
 
   const snap = () => ({ crew: { ...S().frame.loc.crew }, drone: { ...S().frame.loc.drone }, heading: S().here.heading });
   const mix = (a, b, k) => ({ lat: a.lat + (b.lat - a.lat) * k, lon: a.lon + (b.lon - a.lon) * k });
@@ -50,14 +49,16 @@ export function initC(app) {
     app.slots.left.replaceChildren(h('.panel.left', {},
       h('p.eyebrow', {}, 'Intra-mission · simulated real time'), h('h1', {}, 'Traverse monitor'),
       h('h2', {}, 'Time'), M('lmst', 'Local mean solar time', 'COMPUTED'), M('ltst', 'Local true solar time', 'COMPUTED'), M('utc', 'UTC / GMT (Earth)', 'COMPUTED'), M('sol', 'Season', 'COMPUTED'), M('met', 'Mission elapsed', 'SIMULATED'),
-      h('p.note', {}, 'Mission clock is a replay epoch (Perseverance sol 84, May 2021) — not now.'),
+      M('epoch', 'Replay epoch', 'SIMULATED'), h('p.note', {}, 'The mission clock replays a past date so that archived MEDA weather is never shown as current.'),
       h('h2', {}, 'Route navigation'), M('dEl', 'Distance elapsed', 'COMPUTED'), M('dRem', 'Distance remaining', 'COMPUTED'), M('tRem', 'Time remaining (est.)', 'EMULATED'), M('spd', 'Ground speed', 'SIMULATED', 'm/s'), M('bat', 'Battery', 'EMULATED', '%'),
       h('h2', {}, 'Timeline & milestones'), h('ul.wplist', {}, ui.wps)));
     ui.log = h('.log'); ui.feed = h('pre.feed');
     app.slots.right.replaceChildren(h('.panel.right', {},
-      h('h2', {}, 'Weather'), M('air', 'Air temperature', 'MODELLED', '°C'), M('gnd', 'Ground temperature', 'MODELLED', '°C'), M('prs', 'Pressure', 'MODELLED', 'Pa'), M('wind', 'Wind / gust', 'MODELLED', 'm/s'), M('tau', 'Dust opacity τ', 'MODELLED'),
+      h('h2', {}, 'Weather'), M('air', 'Air temperature', 'HISTORIC', '°C'), M('gnd', 'Ground temperature', 'HISTORIC', '°C'), M('prs', 'Pressure', 'HISTORIC', 'Pa'), M('wind', 'Wind speed', 'HISTORIC', 'm/s'), M('uv', 'UV 250–400 nm', 'HISTORIC', 'W/m²'),
+      h('p.note', {}, 'HISTORIC = Perseverance/MEDA hourly means, sols 44–51, replayed by local true solar time.'),
+      M('gust', 'Wind gust', 'SIMULATED', 'm/s'), M('tau', 'Dust opacity τ', 'MODELLED'),
       M('ef', 'Electric field', 'SIMULATED', 'V/m'), M('sep', 'Solar protons >10 MeV', 'SIMULATED', 'pfu'), M('dose', 'Dose rate', 'SIMULATED', 'µSv/h'),
-      h('h2', {}, 'Terrain'), M('ter', 'Surface', 'MODELLED'), M('tq', 'Terrain quality', 'MODELLED'), M('slope', 'Slope', 'MODELLED', '°'),
+      h('h2', {}, 'Terrain'), M('elev', 'Elevation (MOLA areoid)', 'SATELLITE', 'm'), M('slope', 'Slope along track', 'SATELLITE', '°'), M('ter', 'Surface', 'MODELLED'), M('tq', 'Terrain quality', 'MODELLED'),
       h('h2', {}, 'Localization'), M('lerr', 'Crew position error', 'SIMULATED', 'm'), M('derr', 'Drone position error', 'SIMULATED', 'm'), M('xt', 'Cross-track deviation', 'SIMULATED', 'm'),
       h('p.note', {}, `Gaussian model, ${(LOC_R95_M * 100).toFixed(0)} cm at 95 % (σ = 12.3 cm per axis), on the planned track.`),
       h('h2', {}, 'Life support (crew)'), M('o2', 'Suit ppO₂', 'SIMULATED', 'kPa'), M('co2', 'Suit ppCO₂', 'SIMULATED', 'kPa'), M('hr', 'Heart rate', 'SIMULATED', 'bpm'), M('core', 'Core temperature', 'SIMULATED', '°C'),
@@ -102,14 +103,14 @@ export function initC(app) {
     const k = S().done ? 1 : Math.min(1, acc / sim.dt);
     R.crew = mix(prev.crew, cur.crew, k); R.drone = mix(prev.drone, cur.drone, k); R.heading = cur.heading;
     app.crew.lat = R.crew.lat; app.crew.lon = R.crew.lon;
-    if (view === 'fpv') viewer.camera.setView({ destination: deg(R.crew.lon, R.crew.lat, 2.2), orientation: { heading: Cesium.Math.toRadians(R.heading), pitch: Cesium.Math.toRadians(-7), roll: 0 } });
+    if (view === 'fpv') viewer.camera.setView({ destination: gdeg(R.crew.lon, R.crew.lat, 2.2), orientation: { heading: Cesium.Math.toRadians(R.heading), pitch: Cesium.Math.toRadians(-7), roll: 0 } });
     render();
   }
 
   function render() {
     const s = S(), f = s.frame, p = app.plan, mt = marsTime(s.utcMs, SITE.lon, SITE.lat), H = RULES.hls;
     const cls = (bad, warn) => (bad ? 'bad' : warn ? 'warn' : '');
-    m.lmst.set(hms(mt.lmst)); m.ltst.set(hms(mt.ltst)); m.utc.set(new Date(s.utcMs).toISOString().slice(0, 19).replace('T', ' ')); m.sol.set(`Ls ${mt.ls.toFixed(1)}° · MY ${mt.marsYear}`); m.met.set(fmtDur(s.t));
+    m.lmst.set(hms(mt.lmst)); m.ltst.set(hms(mt.ltst)); m.utc.set(new Date(s.utcMs).toISOString().slice(0, 19).replace('T', ' ')); m.sol.set(`Ls ${mt.ls.toFixed(1)}° · MY ${mt.marsYear}`); m.epoch.set(`M2020 sol ${m2020Sol(s.utcMs)}`); m.met.set(fmtDur(s.t));
     m.dEl.set(fmtDist(s.s)); m.dRem.set(fmtDist(p.total_m - s.s));
     const nextLeg = p.legs[Math.min(s.wp + 1, p.legs.length - 1)], planRem = Math.max(0, p.duration - (p.legs[s.wp].depart_s + (nextLeg.seg ? ((s.s - p.legs[s.wp].cum_m) / nextLeg.seg.speed_ms) : 0)) + (s.stopLeft > 0 ? s.stopLeft - (p.legs[s.wp].stop_s || 0) : 0));
     m.tRem.set(s.done === 'COMPLETE' ? '0 min' : fmtDur(planRem)); m.spd.set(s.moving ? (nextLeg.seg.speed_ms * (s.decision === 'REROUTE' ? 0.6 : 1)).toFixed(2) : '0.00'); m.bat.set(s.battery_pct.toFixed(0), cls(s.battery_pct < 20, s.battery_pct < 30));
@@ -117,10 +118,10 @@ export function initC(app) {
       li.lastChild.textContent = done ? '✓' : `ETA ${hms(marsTime(app.startUtcMs + (s.t + Math.max(0, planRem - (p.duration - p.legs[i].arrive_s))) * 1000, SITE.lon).lmst, false)}`; });
     const e = f.env;
     m.air.set(e.air_temp_c.toFixed(1)); m.gnd.set(e.ground_temp_c.toFixed(1)); m.prs.set(e.pressure_pa.toFixed(0));
-    m.wind.set(`${e.wind_ms.toFixed(1)} / ${e.wind_gust_ms.toFixed(1)}`, cls(e.wind_gust_ms >= RULES.weather.abortWindMs, e.wind_gust_ms >= RULES.weather.holdWindMs)); m.tau.set(e.tau.toFixed(2), cls(e.tau >= RULES.weather.abortTau, e.tau >= RULES.weather.holdTau));
+    m.wind.set(e.wind_ms.toFixed(1)); m.uv.set(e.uv_wm2.toFixed(2)); m.gust.set(e.wind_gust_ms.toFixed(1), cls(e.wind_gust_ms >= RULES.weather.abortWindMs, e.wind_gust_ms >= RULES.weather.holdWindMs)); m.tau.set(e.tau.toFixed(2), cls(e.tau >= RULES.weather.abortTau, e.tau >= RULES.weather.holdTau));
     m.ef.set(Math.round(f.efield_vm).toLocaleString('en'), cls(false, f.efield_vm > 1000)); m.sep.set(f.rad.sep_flux_pfu.toFixed(1), cls(f.rad.sep_flux_pfu >= RULES.solar.abortPfu, f.rad.sep_flux_pfu >= RULES.solar.holdPfu)); m.dose.set(f.rad.dose_usv_h.toFixed(0));
     const wpT = p.legs[Math.min(s.here.seg + 1, p.legs.length - 1)];
-    m.ter.set(wpT.terrain); m.tq.set(`${Math.round(wpT.quality * 100)} / 100`, cls(false, wpT.quality < 0.6)); m.slope.set(s.here.slopeDeg.toFixed(1));
+    m.ter.set(wpT.terrain); m.tq.set(`${Math.round(wpT.quality * 100)} / 100`, cls(false, wpT.quality < 0.6)); m.slope.set(s.slope_deg.toFixed(1)); m.elev.set(s.elev_m.toFixed(1));
     m.lerr.set(f.loc.crew_err_m.toFixed(2)); m.derr.set(f.loc.drone_err_m.toFixed(2)); m.xt.set(f.loc.cross_track_m.toFixed(2), cls(false, Math.abs(f.loc.cross_track_m) > RULES.locMismatch.crossTrackM));
     m.o2.set(f.hls.o2_kpa.toFixed(1), cls(f.hls.o2_kpa < H.o2_kpa.critLow, f.hls.o2_kpa < H.o2_kpa.warnLow)); m.co2.set(f.hls.co2_kpa.toFixed(2), cls(f.hls.co2_kpa > H.co2_kpa.critHigh, f.hls.co2_kpa > H.co2_kpa.warnHigh));
     m.hr.set(String(Math.round(f.hls.hr_bpm)), cls(f.hls.hr_bpm > H.hr_bpm.critHigh, f.hls.hr_bpm > H.hr_bpm.warnHigh)); m.core.set(f.hls.core_temp_c.toFixed(1));

@@ -2,8 +2,9 @@
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { rng, LOC_SIGMA_M } from '../src/lib/mars.js';
 import { marsTime } from '../src/lib/marsTime.js';
-import { SOL_TABLE, weatherAt } from '../src/lib/weather.js';
-import { buildPlan, missionStartUtcMs, SITE, WAYPOINTS, VEHICLE } from '../src/lib/mission.js';
+import { SOL_TABLE, REMS_TABLE, weatherAt } from '../src/lib/weather.js';
+import { buildPlan, missionStartUtcMs, m2020Sol, SITE, WAYPOINTS, VEHICLE } from '../src/lib/mission.js';
+import { DEM_INFO } from '../src/lib/dem.js';
 import { RULES } from '../src/lib/decision.js';
 import { createSim } from '../src/lib/sim.js';
 
@@ -20,9 +21,11 @@ const route = {
   properties: {
     label: 'Proposed route', demo_only: true,
     disclaimer: 'Demonstration route created for FLAMMARION. It is NOT a path travelled by NASA\'s Perseverance rover.',
-    start_utc_simulated: iso(0), end_utc_simulated: iso(plan.duration), depart_lmst: '09:30', ls_deg: r1(marsTime(t0, SITE.lon).ls, 1), mars_year: 36,
+    start_utc_simulated: iso(0), end_utc_simulated: iso(plan.duration), depart_lmst: '09:30', ls_deg: r1(marsTime(t0, SITE.lon).ls, 1), mars_year: 36, replay_epoch_m2020_sol: m2020Sol(t0),
     total_distance_m: r1(plan.total_m, 1), duration_s: Math.round(plan.duration), distance_method: 'Vincenty inverse geodesic on the Mars spheroid, summed per segment',
-    elevation_provenance: 'MODELLED — approximate values relative to the MOLA areoid, interpolated from published HiRISE/CTX DTM figures; not sampled from a DEM',
+    elevation_provenance: `SATELLITE — bilinear sample of ${DEM_INFO.product} (${DEM_INFO.cell_m} m, ${DEM_INFO.lid}); datum: ${DEM_INFO.datum}`,
+    total_climb_m: r1(plan.climb_m, 1), total_descent_m: r1(plan.descent_m, 1), max_slope_deg: r1(plan.max_slope_deg, 1), slope_baseline_m: 40,
+    elevation_profile_10m: plan.profile.map((q) => r1(q.elev, 1)),
     vehicle_emulated: VEHICLE,
   },
   features: [
@@ -36,19 +39,20 @@ const route = {
   ],
 };
 writeFileSync(out + 'route.geojson', JSON.stringify(route, null, 1));
-writeFileSync(out + 'weather_sol.json', JSON.stringify(SOL_TABLE, null, 1));
+writeFileSync(out + 'weather_sol.json', JSON.stringify(SOL_TABLE));
+writeFileSync(out + 'rems_gale_reference.json', JSON.stringify(REMS_TABLE));
 
 // 2 — Telemetry stream (NDJSON, one record per 5 s tick) -----------------------------------------
 const R = rng(20210515), ar = (state, k, phi, sig) => (state[k] = phi * (state[k] || 0) + sig * R.gauss());
 const n = Math.ceil((plan.duration + 90 * 60) / dt), st = {}, stream = [];
 for (let i = 0; i <= n; i++) {
-  const t = i * dt, mt = marsTime(t0 + t * 1000, SITE.lon, SITE.lat), w = weatherAt(SOL_TABLE, mt.lmst, mt.sunElevDeg);
+  const t = i * dt, mt = marsTime(t0 + t * 1000, SITE.lon, SITE.lat), w = weatherAt(SOL_TABLE, mt.ltst, mt.sunElevDeg);
   const nom = plan.nominalAt(t), dHab = Math.max(40, nom.s * 0.8);
-  const wind = Math.max(0.2, w.wind_ms + ar(st, 'wind', 0.9, 0.35));
   stream.push({
     tick: i, t, utc: iso(t),
-    env: { air_temp_c: r1(w.air_temp_c + ar(st, 'ta', 0.95, 0.35)), ground_temp_c: r1(w.ground_temp_c + ar(st, 'tg', 0.97, 0.2)), pressure_pa: r1(w.pressure_pa + ar(st, 'p', 0.9, 0.25), 1),
-      wind_ms: r1(wind), wind_gust_ms: r1(wind * 1.45 + Math.abs(ar(st, 'gust', 0.6, 0.6))), wind_dir_deg: Math.round((w.wind_dir_deg + ar(st, 'wd', 0.9, 4) + 360) % 360),
+    // HISTORIC channels are the MEDA hourly means interpolated in local true solar time — no noise is added to them.
+    env: { air_temp_c: r1(w.air_temp_c), ground_temp_c: r1(w.ground_temp_c), pressure_pa: r1(w.pressure_pa, 1), wind_ms: r1(w.wind_ms), uv_wm2: r1(w.uv_wm2, 3),
+      wind_gust_ms: r1(w.wind_ms * 1.45 + Math.abs(ar(st, 'gust', 0.6, 0.6))), wind_dir_deg: Math.round((w.wind_dir_deg + ar(st, 'wd', 0.9, 4) + 360) % 360),
       rh_pct: r1(Math.max(0, w.rh_pct)), tau: r1(w.tau + ar(st, 'tau', 0.995, 0.002), 3), solar_flux_wm2: Math.round(w.solar_flux_wm2), sun_elev_deg: r1(mt.sunElevDeg, 1) },
     hls: { o2_kpa: r1(29.6 + ar(st, 'o2', 0.9, 0.06)), co2_kpa: r1(0.34 + (nom.moving ? 0.06 : 0) + ar(st, 'co2', 0.9, 0.015), 3), hr_bpm: Math.round((nom.moving ? 104 : 88) + ar(st, 'hr', 0.92, 2.2)),
       core_temp_c: r1(37.1 + ar(st, 'ct', 0.98, 0.02)), suit_pressure_kpa: r1(29.6 + ar(st, 'sp', 0.9, 0.03)) },
@@ -61,7 +65,7 @@ for (let i = 0; i <= n; i++) {
   });
 }
 const header = { _meta: true, schema: 'flammarion.telemetry/1.0', tick_s: dt, start_utc_simulated: iso(0), seed: 20210515,
-  provenance: { env: SOL_TABLE.provenance + ' climatology + SIMULATED noise', hls: 'SIMULATED', comms: 'SIMULATED', rad: 'SIMULATED', efield_vm: 'SIMULATED', loc: 'SIMULATED (Gaussian, σ=' + LOC_SIGMA_M.toFixed(4) + ' m/axis)', drone: 'SIMULATED' } };
+  provenance: { env: { ...SOL_TABLE.provenance, wind_gust_ms: 'SIMULATED', sun_elev_deg: 'COMPUTED', note: `HISTORIC = MEDA hourly means, sols ${SOL_TABLE.sols[0]}–${SOL_TABLE.sols.at(-1)}, replayed by LTST` }, hls: 'SIMULATED', comms: 'SIMULATED', rad: 'SIMULATED', efield_vm: 'SIMULATED', loc: 'SIMULATED (Gaussian, σ=' + LOC_SIGMA_M.toFixed(4) + ' m/axis)', drone: 'SIMULATED' } };
 writeFileSync(out + 'telemetry.ndjson', [header, ...stream].map((x) => JSON.stringify(x)).join('\n') + '\n');
 
 // 3 — Dust-devil anomaly scenario: run the real sim headless, inject at T+20 min, dump drone messages + decisions.
