@@ -1,0 +1,283 @@
+{
+ "meda_files": [
+  {
+   "sol": 44,
+   "product": "CAL_TIRS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0044/WE__0044___________CAL_TIRS________________P04.CSV",
+   "bytes": 6402358
+  },
+  {
+   "sol": 44,
+   "product": "CAL_ATS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0044/WE__0044___________CAL_ATS_________________P01.CSV",
+   "bytes": 8966976
+  },
+  {
+   "sol": 44,
+   "product": "CAL_RDS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0044/WE__0044___________CAL_RDS_________________P02.CSV",
+   "bytes": 13867402
+  },
+  {
+   "sol": 44,
+   "product": "DER_WS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_derived_env/sol_0000_0089/sol_0044/WE__0044___________DER_WS__________________P03.CSV",
+   "bytes": 2500439
+  },
+  {
+   "sol": 44,
+   "product": "DER_PS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_derived_env/sol_0000_0089/sol_0044/WE__0044___________DER_PS__________________P01.CSV",
+   "bytes": 3018927
+  },
+  {
+   "sol": 45,
+   "product": "CAL_TIRS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0045/WE__0045___________CAL_TIRS________________P04.CSV",
+   "bytes": 6733234
+  },
+  {
+   "sol": 45,
+   "product": "CAL_ATS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0045/WE__0045___________CAL_ATS_________________P01.CSV",
+   "bytes": 9438255
+  },
+  {
+   "sol": 45,
+   "product": "CAL_RDS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0045/WE__0045___________CAL_RDS_________________P01.CSV",
+   "bytes": 14637867
+  },
+  {
+   "sol": 45,
+   "product": "DER_WS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_derived_env/sol_0000_0089/sol_0045/WE__0045___________DER_WS__________________P02.CSV",
+   "bytes": 3703885
+  },
+  {
+   "sol": 45,
+   "product": "DER_PS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_derived_env/sol_0000_0089/sol_0045/WE__0045___________DER_PS__________________P02.CSV",
+   "bytes": 3176013
+  },
+  {
+   "sol": 46,
+   "product": "CAL_TIRS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0046/WE__0046___________CAL_TIRS________________P04.CSV",
+   "bytes": 6005327
+  },
+  {
+   "sol": 46,
+   "product": "CAL_ATS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0046/WE__0046___________CAL_ATS_________________P01.CSV",
+   "bytes": 8417297
+  },
+  {
+   "sol": 46,
+   "product": "CAL_RDS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0046/WE__0046___________CAL_RDS_________________P01.CSV",
+   "bytes": 13045400
+  },
+  {
+   "sol": 46,
+   "product": "DER_WS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_derived_env/sol_0000_0089/sol_0046/WE__0046___________DER_WS__________________P02.CSV",
+   "bytes": 3068287
+  },
+  {
+   "sol": 46,
+   "product": "DER_PS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_derived_env/sol_0000_0089/sol_0046/WE__0046___________DER_PS__________________P01.CSV",
+   "bytes": 2829981
+  },
+  {
+   "sol": 47,
+   "product": "CAL_TIRS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0047/WE__0047___________CAL_TIRS________________P04.CSV",
+   "bytes": 6964450
+  },
+  {
+   "sol": 47,
+   "product": "CAL_ATS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0047/WE__0047___________CAL_ATS_________________P01.CSV",
+   "bytes": 9754415
+  },
+  {
+   "sol": 47,
+   "product": "CAL_RDS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0047/WE__0047___________CAL_RDS_________________P03.CSV",
+   "bytes": 15143482
+  },
+  {
+   "sol": 47,
+   "product": "DER_WS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_derived_env/sol_0000_0089/sol_0047/WE__0047___________DER_WS__________________P03.CSV",
+   "bytes": 3490164
+  },
+  {
+   "sol": 47,
+   "product": "DER_PS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_derived_env/sol_0000_0089/sol_0047/WE__0047___________DER_PS__________________P01.CSV",
+   "bytes": 3284553
+  },
+  {
+   "sol": 48,
+   "product": "CAL_TIRS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0048/WE__0048___________CAL_TIRS________________P04.CSV",
+   "bytes": 6209172
+  },
+  {
+   "sol": 48,
+   "product": "CAL_ATS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0048/WE__0048___________CAL_ATS_________________P01.CSV",
+   "bytes": 8701617
+  },
+  {
+   "sol": 48,
+   "product": "CAL_RDS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0048/WE__0048___________CAL_RDS_________________P03.CSV",
+   "bytes": 13487184
+  },
+  {
+   "sol": 48,
+   "product": "DER_WS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_derived_env/sol_0000_0089/sol_0048/WE__0048___________DER_WS__________________P03.CSV",
+   "bytes": 3716485
+  },
+  {
+   "sol": 48,
+   "product": "DER_PS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_derived_env/sol_0000_0089/sol_0048/WE__0048___________DER_PS__________________P01.CSV",
+   "bytes": 2925993
+  },
+  {
+   "sol": 49,
+   "product": "CAL_TIRS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0049/WE__0049___________CAL_TIRS________________P04.CSV",
+   "bytes": 6473936
+  },
+  {
+   "sol": 49,
+   "product": "CAL_ATS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0049/WE__0049___________CAL_ATS_________________P01.CSV",
+   "bytes": 9075375
+  },
+  {
+   "sol": 49,
+   "product": "CAL_RDS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0049/WE__0049___________CAL_RDS_________________P02.CSV",
+   "bytes": 14072810
+  },
+  {
+   "sol": 49,
+   "product": "DER_WS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_derived_env/sol_0000_0089/sol_0049/WE__0049___________DER_WS__________________P03.CSV",
+   "bytes": 4125636
+  },
+  {
+   "sol": 49,
+   "product": "DER_PS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_derived_env/sol_0000_0089/sol_0049/WE__0049___________DER_PS__________________P01.CSV",
+   "bytes": 3051921
+  },
+  {
+   "sol": 50,
+   "product": "CAL_TIRS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0050/WE__0050___________CAL_TIRS________________P04.CSV",
+   "bytes": 6388439
+  },
+  {
+   "sol": 50,
+   "product": "CAL_ATS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0050/WE__0050___________CAL_ATS_________________P01.CSV",
+   "bytes": 8957297
+  },
+  {
+   "sol": 50,
+   "product": "CAL_RDS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0050/WE__0050___________CAL_RDS_________________P01.CSV",
+   "bytes": 13867612
+  },
+  {
+   "sol": 50,
+   "product": "DER_WS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_derived_env/sol_0000_0089/sol_0050/WE__0050___________DER_WS__________________P02.CSV",
+   "bytes": 1985343
+  },
+  {
+   "sol": 50,
+   "product": "DER_PS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_derived_env/sol_0000_0089/sol_0050/WE__0050___________DER_PS__________________P01.CSV",
+   "bytes": 3014985
+  },
+  {
+   "sol": 51,
+   "product": "CAL_TIRS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0051/WE__0051___________CAL_TIRS________________P04.CSV",
+   "bytes": 6752011
+  },
+  {
+   "sol": 51,
+   "product": "CAL_ATS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0051/WE__0051___________CAL_ATS_________________P01.CSV",
+   "bytes": 9469135
+  },
+  {
+   "sol": 51,
+   "product": "CAL_RDS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0051/WE__0051___________CAL_RDS_________________P01.CSV",
+   "bytes": 14672516
+  },
+  {
+   "sol": 51,
+   "product": "DER_WS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_derived_env/sol_0000_0089/sol_0051/WE__0051___________DER_WS__________________P02.CSV",
+   "bytes": 3491656
+  },
+  {
+   "sol": 51,
+   "product": "DER_PS",
+   "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_derived_env/sol_0000_0089/sol_0051/WE__0051___________DER_PS__________________P01.CSV",
+   "bytes": 3187353
+  }
+ ],
+ "rems_files": [
+  {
+   "sol": 50,
+   "url": "https://atmos.nmsu.edu/PDS/data/mslrem_1001/DATA/SOL_00001_00089/SOL00050/RME_401885190RMD00500000000_______PA.TAB",
+   "bytes": 10636596
+  },
+  {
+   "sol": 51,
+   "url": "https://atmos.nmsu.edu/PDS/data/mslrem_1001/DATA/SOL_00001_00089/SOL00051/RME_401973965RMD00510000000_______PA.TAB",
+   "bytes": 8781804
+  },
+  {
+   "sol": 52,
+   "url": "https://atmos.nmsu.edu/PDS/data/mslrem_1001/DATA/SOL_00001_00089/SOL00052/RME_402062739RMD00520000000_______PA.TAB",
+   "bytes": 8216364
+  },
+  {
+   "sol": 53,
+   "url": "https://atmos.nmsu.edu/PDS/data/mslrem_1001/DATA/SOL_00001_00089/SOL00053/RME_402151514RMD00530000000_______PA.TAB",
+   "bytes": 7496916
+  },
+  {
+   "sol": 54,
+   "url": "https://atmos.nmsu.edu/PDS/data/mslrem_1001/DATA/SOL_00001_00089/SOL00054/RME_402240288RMD00540000000_______PA.TAB",
+   "bytes": 9508320
+  }
+ ],
+ "dem": [
+  {
+   "url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/mars2020_trn/CTX/ScienceInvestigationMaps_JPL/M20_JezeroCrater_CTXDEM_20m.tif",
+   "bytes": 90345300,
+   "access": "full download"
+  },
+  {
+   "url": "https://planetarymaps.usgs.gov/mosaic/Mars/HRSC_MOLA_Blend/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif",
+   "access": "HTTP range reads of bbox window only (cross-check)"
+  }
+ ],
+ "tls_note": "Verification ON. atmos.nmsu.edu chains to emSign Root CA - G1 (Mozilla/certifi); added to CA bundle instead of verify=False."
+}

@@ -1,0 +1,57 @@
+{
+ "requested": {
+  "bbox": [
+   77.25,
+   18.15,
+   77.95,
+   18.65
+  ],
+  "tif_shape": [
+   1482,
+   2075
+  ],
+  "ctx20m_full_min": -2923.9,
+  "ctx20m_full_max": -1515.6,
+  "grid512_min": -2920.4,
+  "grid512_max": -1516.6,
+  "grid512_std": 230.2,
+  "grid512_p02_p98": [
+   -2691.9,
+   -1798.9
+  ],
+  "hrsc200m_min": -2777.0,
+  "hrsc200m_max": -1522.0,
+  "nodata_frac_full": 0.0
+ },
+ "fullcrater": {
+  "bbox": [
+   77.1,
+   17.95,
+   78.05,
+   18.85
+  ],
+  "tif_shape": [
+   2667,
+   2816
+  ],
+  "ctx20m_full_min": -2922.8,
+  "ctx20m_full_max": -1378.4,
+  "grid512_min": -2920.2,
+  "grid512_max": -1384.2,
+  "grid512_std": 264.1,
+  "grid512_p02_p98": [
+   -2680.3,
+   -1802.4
+  ],
+  "hrsc200m_min": -2816.0,
+  "hrsc200m_max": -1413.0,
+  "nodata_frac_full": 0.0
+ },
+ "landing_site_check": {
+  "name": "Octavia E. Butler landing site",
+  "lat": 18.4447,
+  "lon": 77.4508,
+  "ctx20m_m": -2567.1,
+  "hrsc_mola200m_m": -2573.0
+ }
+}
