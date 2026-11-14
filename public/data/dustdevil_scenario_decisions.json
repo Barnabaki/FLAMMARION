@@ -1,0 +1,51 @@
+{
+ "injected_at_tick": 240,
+ "decision_log": [
+  {
+   "t": 1215,
+   "from": "PROCEED",
+   "to": "HOLD",
+   "flags": [
+    {
+     "flag": "dust_devil",
+     "action": "HOLD",
+     "detail": "conf 0.95, range 230 m, TTI 47 s"
+    }
+   ]
+  },
+  {
+   "t": 1355,
+   "from": "HOLD",
+   "to": "PROCEED",
+   "flags": []
+  }
+ ],
+ "alerts": [
+  {
+   "t": 1215,
+   "decision": "HOLD",
+   "from": "PROCEED",
+   "flags": [
+    "dust_devil"
+   ],
+   "text": "dust_devil: conf 0.95, range 230 m, TTI 47 s",
+   "delivered": {
+    "crew": true,
+    "habitat": true,
+    "mcc_earth_eta_s": 1038
+   }
+  },
+  {
+   "t": 1355,
+   "decision": "PROCEED",
+   "from": "HOLD",
+   "flags": [],
+   "text": "all flags clear",
+   "delivered": {
+    "crew": true,
+    "habitat": true,
+    "mcc_earth_eta_s": 1038
+   }
+  }
+ ]
+}

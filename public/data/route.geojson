@@ -1,0 +1,313 @@
+{
+ "type": "FeatureCollection",
+ "name": "FLAMMARION proposed route — Jezero crater",
+ "crs_note": "IAU 2000 Mars (IAU_2015:49900 / ESRI:104905 GCS_Mars_2000): a=3396190 m, b=3376200 m; planetocentric latitude, east-positive longitude (0–360°E). GeoJSON coordinate order [lon, lat, elevation_m]. NOT WGS 84.",
+ "properties": {
+  "label": "Proposed route",
+  "demo_only": true,
+  "disclaimer": "Demonstration route created for FLAMMARION. It is NOT a path travelled by NASA's Perseverance rover.",
+  "start_utc_simulated": "2021-05-15T21:35:11.000Z",
+  "end_utc_simulated": "2021-05-15T23:13:24.792Z",
+  "depart_lmst": "09:30",
+  "ls_deg": 45.6,
+  "mars_year": 36,
+  "total_distance_m": 2600.3,
+  "duration_s": 5894,
+  "distance_method": "Vincenty inverse geodesic on the Mars spheroid, summed per segment",
+  "elevation_provenance": "MODELLED — approximate values relative to the MOLA areoid, interpolated from published HiRISE/CTX DTM figures; not sampled from a DEM",
+  "vehicle_emulated": {
+   "base_speed_ms": 1,
+   "battery_kwh": 24,
+   "hotel_kw": 1.1,
+   "drive_kwh_per_km": 1.25,
+   "heater_kw_per_k": 0.012,
+   "heater_ref_c": -20
+  }
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "kind": "route",
+    "label": "Proposed route"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      77.4508,
+      18.4447,
+      -2569
+     ],
+     [
+      77.44918,
+      18.44935,
+      -2568
+     ],
+     [
+      77.4438,
+      18.45249,
+      -2567
+     ],
+     [
+      77.43528,
+      18.45343,
+      -2565
+     ],
+     [
+      77.4261,
+      18.45437,
+      -2562
+     ],
+     [
+      77.42479,
+      18.45751,
+      -2558
+     ],
+     [
+      77.424,
+      18.46159,
+      -2554
+     ],
+     [
+      77.42807,
+      18.46944,
+      -2550
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     77.4508,
+     18.4447,
+     -2569
+    ]
+   },
+   "properties": {
+    "kind": "waypoint",
+    "id": "WP0",
+    "name": "Habitat — Octavia E. Butler Landing",
+    "note": "Start. Perseverance touchdown site (18 Feb 2021), used here as the notional habitat location.",
+    "elevation_m": -2569,
+    "cumulative_distance_m": 0,
+    "segment_distance_m": 0,
+    "segment_speed_ms": null,
+    "segment_drive_s": 0,
+    "terrain": null,
+    "terrain_quality": null,
+    "stop_s": 0,
+    "arrive_met_s": 0,
+    "depart_met_s": 0,
+    "arrive_utc_simulated": "2021-05-15T21:35:11.000Z",
+    "arrive_lmst_h": 9.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     77.44918,
+     18.44935,
+     -2568
+    ]
+   },
+   "properties": {
+    "kind": "waypoint",
+    "id": "WP1",
+    "name": "Crater-floor margin",
+    "note": "North-west along the boundary between the cratered floor and the rougher unit to the west.",
+    "elevation_m": -2568,
+    "cumulative_distance_m": 287.7,
+    "segment_distance_m": 287.7,
+    "segment_speed_ms": 0.901,
+    "segment_drive_s": 319,
+    "terrain": "fractured bedrock",
+    "terrain_quality": 0.82,
+    "stop_s": 480,
+    "arrive_met_s": 319,
+    "depart_met_s": 799,
+    "arrive_utc_simulated": "2021-05-15T21:40:30.303Z",
+    "arrive_lmst_h": 9.586
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     77.4438,
+     18.45249,
+     -2567
+    ]
+   },
+   "properties": {
+    "kind": "waypoint",
+    "id": "WP2",
+    "name": "Floor traverse",
+    "note": "Enters the smoother corridor south of a ~250 m crater.",
+    "elevation_m": -2567,
+    "cumulative_distance_m": 642.1,
+    "segment_distance_m": 354.4,
+    "segment_speed_ms": 0.917,
+    "segment_drive_s": 386,
+    "terrain": "fractured bedrock",
+    "terrain_quality": 0.85,
+    "stop_s": 480,
+    "arrive_met_s": 1186,
+    "depart_met_s": 1666,
+    "arrive_utc_simulated": "2021-05-15T21:54:56.525Z",
+    "arrive_lmst_h": 9.821
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     77.43528,
+     18.45343,
+     -2565
+    ]
+   },
+   "properties": {
+    "kind": "waypoint",
+    "id": "WP3",
+    "name": "Smooth corridor",
+    "note": "Low-relief, smooth-textured band leading west toward the delta.",
+    "elevation_m": -2565,
+    "cumulative_distance_m": 1124.6,
+    "segment_distance_m": 482.5,
+    "segment_speed_ms": 0.945,
+    "segment_drive_s": 511,
+    "terrain": "smooth regolith",
+    "terrain_quality": 0.9,
+    "stop_s": 480,
+    "arrive_met_s": 2176,
+    "depart_met_s": 2656,
+    "arrive_utc_simulated": "2021-05-15T22:11:27.106Z",
+    "arrive_lmst_h": 10.088
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     77.4261,
+     18.45437,
+     -2562
+    ]
+   },
+   "properties": {
+    "kind": "waypoint",
+    "id": "WP4",
+    "name": "Delta approach",
+    "note": "Gentle rise toward the foot of the western fan-delta.",
+    "elevation_m": -2562,
+    "cumulative_distance_m": 1644,
+    "segment_distance_m": 519.4,
+    "segment_speed_ms": 0.934,
+    "segment_drive_s": 556,
+    "terrain": "smooth regolith",
+    "terrain_quality": 0.88,
+    "stop_s": 480,
+    "arrive_met_s": 3212,
+    "depart_met_s": 3692,
+    "arrive_utc_simulated": "2021-05-15T22:28:43.212Z",
+    "arrive_lmst_h": 10.368
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     77.42479,
+     18.45751,
+     -2558
+    ]
+   },
+   "properties": {
+    "kind": "waypoint",
+    "id": "WP5",
+    "name": "Delta-front apron",
+    "note": "Debris apron below the scarp; sand ripples and float rocks.",
+    "elevation_m": -2558,
+    "cumulative_distance_m": 1842.4,
+    "segment_distance_m": 198.5,
+    "segment_speed_ms": 0.808,
+    "segment_drive_s": 246,
+    "terrain": "rocky apron with ripples",
+    "terrain_quality": 0.65,
+    "stop_s": 480,
+    "arrive_met_s": 3938,
+    "depart_met_s": 4418,
+    "arrive_utc_simulated": "2021-05-15T22:40:48.977Z",
+    "arrive_lmst_h": 10.565
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     77.424,
+     18.46159,
+     -2554
+    ]
+   },
+   "properties": {
+    "kind": "waypoint",
+    "id": "WP6",
+    "name": "Delta front — south-east scarp base",
+    "note": "Foot of the layered delta scarp.",
+    "elevation_m": -2554,
+    "cumulative_distance_m": 2085.9,
+    "segment_distance_m": 243.5,
+    "segment_speed_ms": 0.78,
+    "segment_drive_s": 312,
+    "terrain": "rocky apron",
+    "terrain_quality": 0.6,
+    "stop_s": 480,
+    "arrive_met_s": 4730,
+    "depart_met_s": 5210,
+    "arrive_utc_simulated": "2021-05-15T22:54:01.175Z",
+    "arrive_lmst_h": 10.779
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     77.42807,
+     18.46944,
+     -2550
+    ]
+   },
+   "properties": {
+    "kind": "waypoint",
+    "id": "WP7",
+    "name": "Delta front — east scarp base",
+    "note": "Destination: base of the eastern delta-front scarp.",
+    "elevation_m": -2550,
+    "cumulative_distance_m": 2600.3,
+    "segment_distance_m": 514.4,
+    "segment_speed_ms": 0.753,
+    "segment_drive_s": 684,
+    "terrain": "rocky apron",
+    "terrain_quality": 0.55,
+    "stop_s": 0,
+    "arrive_met_s": 5894,
+    "depart_met_s": 5894,
+    "arrive_utc_simulated": "2021-05-15T23:13:24.792Z",
+    "arrive_lmst_h": 11.093
+   }
+  }
+ ]
+}
