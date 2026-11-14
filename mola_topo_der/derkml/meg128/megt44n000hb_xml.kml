@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+<Document>
+<name>PDS Orbital Data Explorer - PDS Product Coverage</name>
+<description>
+  <![CDATA[
+NASA's Planetary Data System Geosciences Node Product Coverage KML file<br>
+  This is the product coverage for 
+<ul>
+   <li>Product id: megt44n000hb</li>
+   <li>Instrument host id: MGS</li>
+   <li>Instrument id: MOLA</li>
+   <li>Target body: Mars</li>
+   <li>Planetocentric latitudes </li>
+   <li>Generated from PDS Geosciences Orbital Data Explorer on 2026-09-18T13:30:28.510</li>
+ <li>Links: 
+<ul>
+   <li><a href="https://pds.jpl.nasa.gov/">NASA Planetary Data System</a></li>
+   <li><a href="https://pds-geosciences.wustl.edu/">Geosciences Node</li></a>
+   <li><a href="https://ode.rsl.wustl.edu/">Orbital Data Explorer</li></a>
+   <li><a href="https://ode.rsl.wustl.edu/mars/indexproductpage.aspx?product_id=megt44n000hb">Product link</a></li>
+</li></li></ul></ul>
+  ]]>
+</description>
+<Style id="highlightPlacemark">
+  <IconStyle>
+    <Icon>
+      <href>http://maps.google.com/mapfiles/kml/paddle/red-stars.png</href>
+    </Icon>
+  </IconStyle>
+  <LabelStyle>
+    <scale>1</scale>
+  </LabelStyle>
+  <LineStyle>
+      <color>ffff00ff</color>
+  </LineStyle>
+  <PolyStyle>
+    <color>ffff00ff</color>
+    <fill>0</fill>
+    <outline>1</outline>
+  </PolyStyle>
+</Style>
+<Style id="normalPlacemark">
+  <IconStyle>
+    <Icon>
+      <href>https://maps.google.com/mapfiles/kml/paddle/red-blank.png</href>
+    </Icon>
+  </IconStyle>
+  <LabelStyle>
+    <scale>0</scale>
+  </LabelStyle>
+  <LineStyle>
+      <color>ffffff00</color>
+  </LineStyle>
+  <PolyStyle>
+    <color>ffffff00</color>
+    <fill>0</fill>
+    <outline>1</outline>
+  </PolyStyle>
+</Style>
+<StyleMap id="hightlightStyleMap">
+  <Pair>
+    <key>normal</key>
+    <styleUrl>#normalPlacemark</styleUrl>
+  </Pair>
+  <Pair>
+    <key>highlight</key>
+    <styleUrl>#highlightPlacemark</styleUrl>
+  </Pair>
+</StyleMap>
+
+<Placemark>
+  <name>megt44n000hb</name>
+  <description>
+    <![CDATA[
+      PDS Product Coverage for:  </br>
+        <a href="https://ode.rsl.wustl.edu/mars/indexproductpage.aspx?product_id=megt44n000hb">
+        Product: megt44n000hb
+        </a>
+        </br>Mission: MGS
+        </br>Instrument: MOLA
+        </br>Product Type: MEGDR
+      </br>Links:</br>
+      <a href="https://pds.nasa.gov/">NASA Planetary Data System</a></br>
+      <a href="https://pds-geosciences.wustl.edu/">Geosciences Node's</a></br>
+      <a href="https://ode.rsl.wustl.edu/mars/">Orbital Data Explorer</a></br>
+    ]]>
+  </description>
+  <LookAt>
+    <latitude>22</latitude>
+    <longitude>45</longitude>
+    <altitude>1000000.0</altitude>
+  </LookAt>
+  <visibility>1</visibility>
+  <open>0</open>
+  <styleUrl>#hightlightStyleMap</styleUrl>
+  <MultiGeometry>
+    <Point>
+      <coordinates>
+      45.0,22.0,100
+      </coordinates>
+    </Point>
+    <LinearRing>
+      <extrude>0</extrude>
+      <tessellate>1</tessellate>
+      <altitudeMode>clampToGround</altitudeMode>
+      <coordinates>
+      0.0,0.0,100
+      0.0,1.0,100
+      0.0,2.0,100
+      0.0,3.0,100
+      0.0,4.0,100
+      0.0,5.0,100
+      0.0,6.0,100
+      0.0,7.0,100
+      0.0,8.0,100
+      0.0,9.0,100
+      0.0,10.0,100
+      0.0,11.0,100
+      0.0,12.0,100
+      0.0,13.0,100
+      0.0,14.0,100
+      0.0,15.0,100
+      0.0,16.0,100
+      0.0,17.0,100
+      0.0,18.0,100
+      0.0,19.0,100
+      0.0,20.0,100
+      0.0,21.0,100
+      0.0,22.0,100
+      0.0,23.0,100
+      0.0,24.0,100
+      0.0,25.0,100
+      0.0,26.0,100
+      0.0,27.0,100
+      0.0,28.0,100
+      0.0,29.0,100
+      0.0,30.0,100
+      0.0,31.0,100
+      0.0,32.0,100
+      0.0,33.0,100
+      0.0,34.0,100
+      0.0,35.0,100
+      0.0,36.0,100
+      0.0,37.0,100
+      0.0,38.0,100
+      0.0,39.0,100
+      0.0,40.0,100
+      0.0,41.0,100
+      0.0,42.0,100
+      0.0,43.0,100
+      0.0,44.0,100
+      1.0,44.0,100
+      2.0,44.0,100
+      3.0,44.0,100
+      4.0,44.0,100
+      5.0,44.0,100
+      6.0,44.0,100
+      7.0,44.0,100
+      8.0,44.0,100
+      9.0,44.0,100
+      10.0,44.0,100
+      11.0,44.0,100
+      12.0,44.0,100
+      13.0,44.0,100
+      14.0,44.0,100
+      15.0,44.0,100
+      16.0,44.0,100
+      17.0,44.0,100
+      18.0,44.0,100
+      19.0,44.0,100
+      20.0,44.0,100
+      21.0,44.0,100
+      22.0,44.0,100
+      23.0,44.0,100
+      24.0,44.0,100
+      25.0,44.0,100
+      26.0,44.0,100
+      27.0,44.0,100
+      28.0,44.0,100
+      29.0,44.0,100
+      30.0,44.0,100
+      31.0,44.0,100
+      32.0,44.0,100
+      33.0,44.0,100
+      34.0,44.0,100
+      35.0,44.0,100
+      36.0,44.0,100
+      37.0,44.0,100
+      38.0,44.0,100
+      39.0,44.0,100
+      40.0,44.0,100
+      41.0,44.0,100
+      42.0,44.0,100
+      43.0,44.0,100
+      44.0,44.0,100
+      45.0,44.0,100
+      46.0,44.0,100
+      47.0,44.0,100
+      48.0,44.0,100
+      49.0,44.0,100
+      50.0,44.0,100
+      51.0,44.0,100
+      52.0,44.0,100
+      53.0,44.0,100
+      54.0,44.0,100
+      55.0,44.0,100
+      56.0,44.0,100
+      57.0,44.0,100
+      58.0,44.0,100
+      59.0,44.0,100
+      60.0,44.0,100
+      61.0,44.0,100
+      62.0,44.0,100
+      63.0,44.0,100
+      64.0,44.0,100
+      65.0,44.0,100
+      66.0,44.0,100
+      67.0,44.0,100
+      68.0,44.0,100
+      69.0,44.0,100
+      70.0,44.0,100
+      71.0,44.0,100
+      72.0,44.0,100
+      73.0,44.0,100
+      74.0,44.0,100
+      75.0,44.0,100
+      76.0,44.0,100
+      77.0,44.0,100
+      78.0,44.0,100
+      79.0,44.0,100
+      80.0,44.0,100
+      81.0,44.0,100
+      82.0,44.0,100
+      83.0,44.0,100
+      84.0,44.0,100
+      85.0,44.0,100
+      86.0,44.0,100
+      87.0,44.0,100
+      88.0,44.0,100
+      89.0,44.0,100
+      90.0,44.0,100
+      90.0,43.0,100
+      90.0,42.0,100
+      90.0,41.0,100
+      90.0,40.0,100
+      90.0,39.0,100
+      90.0,38.0,100
+      90.0,37.0,100
+      90.0,36.0,100
+      90.0,35.0,100
+      90.0,34.0,100
+      90.0,33.0,100
+      90.0,32.0,100
+      90.0,31.0,100
+      90.0,30.0,100
+      90.0,29.0,100
+      90.0,28.0,100
+      90.0,27.0,100
+      90.0,26.0,100
+      90.0,25.0,100
+      90.0,24.0,100
+      90.0,23.0,100
+      90.0,22.0,100
+      90.0,21.0,100
+      90.0,20.0,100
+      90.0,19.0,100
+      90.0,18.0,100
+      90.0,17.0,100
+      90.0,16.0,100
+      90.0,15.0,100
+      90.0,14.0,100
+      90.0,13.0,100
+      90.0,12.0,100
+      90.0,11.0,100
+      90.0,10.0,100
+      90.0,9.0,100
+      90.0,8.0,100
+      90.0,7.0,100
+      90.0,6.0,100
+      90.0,5.0,100
+      90.0,4.0,100
+      90.0,3.0,100
+      90.0,2.0,100
+      90.0,1.0,100
+      90.0,0.0,100
+      89.0,0.0,100
+      88.0,0.0,100
+      87.0,0.0,100
+      86.0,0.0,100
+      85.0,0.0,100
+      84.0,0.0,100
+      83.0,0.0,100
+      82.0,0.0,100
+      81.0,0.0,100
+      80.0,0.0,100
+      79.0,0.0,100
+      78.0,0.0,100
+      77.0,0.0,100
+      76.0,0.0,100
+      75.0,0.0,100
+      74.0,0.0,100
+      73.0,0.0,100
+      72.0,0.0,100
+      71.0,0.0,100
+      70.0,0.0,100
+      69.0,0.0,100
+      68.0,0.0,100
+      67.0,0.0,100
+      66.0,0.0,100
+      65.0,0.0,100
+      64.0,0.0,100
+      63.0,0.0,100
+      62.0,0.0,100
+      61.0,0.0,100
+      60.0,0.0,100
+      59.0,0.0,100
+      58.0,0.0,100
+      57.0,0.0,100
+      56.0,0.0,100
+      55.0,0.0,100
+      54.0,0.0,100
+      53.0,0.0,100
+      52.0,0.0,100
+      51.0,0.0,100
+      50.0,0.0,100
+      49.0,0.0,100
+      48.0,0.0,100
+      47.0,0.0,100
+      46.0,0.0,100
+      45.0,0.0,100
+      44.0,0.0,100
+      43.0,0.0,100
+      42.0,0.0,100
+      41.0,0.0,100
+      40.0,0.0,100
+      39.0,0.0,100
+      38.0,0.0,100
+      37.0,0.0,100
+      36.0,0.0,100
+      35.0,0.0,100
+      34.0,0.0,100
+      33.0,0.0,100
+      32.0,0.0,100
+      31.0,0.0,100
+      30.0,0.0,100
+      29.0,0.0,100
+      28.0,0.0,100
+      27.0,0.0,100
+      26.0,0.0,100
+      25.0,0.0,100
+      24.0,0.0,100
+      23.0,0.0,100
+      22.0,0.0,100
+      21.0,0.0,100
+      20.0,0.0,100
+      19.0,0.0,100
+      18.0,0.0,100
+      17.0,0.0,100
+      16.0,0.0,100
+      15.0,0.0,100
+      14.0,0.0,100
+      13.0,0.0,100
+      12.0,0.0,100
+      11.0,0.0,100
+      10.0,0.0,100
+      9.0,0.0,100
+      8.0,0.0,100
+      7.0,0.0,100
+      6.0,0.0,100
+      5.0,0.0,100
+      4.0,0.0,100
+      3.0,0.0,100
+      2.0,0.0,100
+      1.0,0.0,100
+      0.0,0.0,100
+       </coordinates>
+    </LinearRing>
+  </MultiGeometry>
+</Placemark>
+</Document>
+</kml>
