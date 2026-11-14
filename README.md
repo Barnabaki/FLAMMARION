@@ -1,26 +1,45 @@
 # FLAMMARION
 
-Interactive demo for exploring Mars, planning a crewed traverse in Jezero Crater, assessing GO / NO-GO before departure and monitoring the traverse in (simulated) real time. NASA hackathon project.
+A 3D web app for planning and monitoring a crewed traverse on Mars. You zoom from the full globe down to Jezero Crater, review a proposed route, get a GO / NO-GO from the weather forecast, then watch the traverse play out with a scout drone, live telemetry and automatic HOLD / REROUTE / ABORT decisions. Built for a NASA hackathon; it runs entirely in the browser on real NASA imagery, terrain and Perseverance weather data.
 
-**Flow:** Module A *Area to Region* → Module B *Pre-mission* → Module C *Intra-mission*, in one persistent 3D scene.
+## How to open the app
 
+You need [Node.js](https://nodejs.org) 20 or newer and an internet connection (the Mars imagery is streamed from NASA).
+
+1. Get the code. The app currently lives on the `claude/new-session-uabkbg` branch, not on `main`:
+
+```bash
+git clone -b claude/new-session-uabkbg https://github.com/Barnabaki/FLAMMARION.git
 ```
-Mars → MC-13 Syrtis Major → MC-13 NE → Jezero Crater → Pre-mission (GO) → Start Mission → Intra-mission
+
+```bash
+cd FLAMMARION
 ```
 
-## Run
-
-Requires Node ≥ 20 and internet access to `trek.nasa.gov` (imagery tiles are streamed live from NASA Mars Trek).
+2. Install the dependencies (once):
 
 ```bash
 npm install
 ```
 
+3. Start the app:
+
 ```bash
 npm run dev
 ```
 
-Open the printed URL (default http://localhost:5173). Other scripts:
+4. Open http://localhost:5173 in Chrome, Edge or Firefox. Keep the terminal open while you use the app; press `Ctrl+C` in it to stop.
+
+### Using it
+
+1. Click the planet to show the 30 map regions, then click **MC-13 Syrtis Major**, the **NE** quadrant and **Jezero Crater**.
+2. On the route map, click **Plan this route → Pre-mission**.
+3. Watch the forecast time-lapse and, with the assessment at **GO**, click **Start Mission →**.
+4. In the mission view, switch between **Bird's-eye** and **First-person**, change the playback speed, and click **Dust devil ahead** to trigger the anomaly demo.
+
+The breadcrumb in the top bar takes you back to any earlier level, and **Data sources** lists where every value comes from.
+
+## Development
 
 | Command | Purpose |
 | --- | --- |
