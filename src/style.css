@@ -82,7 +82,7 @@ ul.dots { list-style: none; margin: 0; padding: 0; } ul.dots li { display: flex;
 @keyframes breathe { 0%, 100% { opacity: .78; transform: translate(-50%, -50%) scale(1); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.035); } }
 
 /* ---- pre-plan: sticky CTA, stats, bento ---------------------------------------------------------------------- */
-.panel.site { padding: 0; display: flex; flex-direction: column; overflow: hidden; } .panel.site .scroll { padding: 22px 24px 8px; overflow: auto; scrollbar-width: none; flex: 1; min-height: 0; } .panel.site .scroll::-webkit-scrollbar { width: 0; }
+.panel.site { padding: 0; display: block; overflow: hidden; max-height: none; } .panel.site .scroll { padding: 22px 24px 8px; overflow-y: auto; scrollbar-width: none; max-height: calc(100vh - 240px); } .panel.site .scroll::-webkit-scrollbar { width: 0; }
 .sticky { padding: 14px 24px 20px; border-top: 1px solid var(--hair); background: linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.11)); -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); }
 .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0 4px; } .stats div { display: flex; flex-direction: column; } .stats .cite { font-size: 18px; font-weight: 650; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; } .stats small { color: var(--dim); font-size: 11px; }
 .bento { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
