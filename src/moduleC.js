@@ -7,11 +7,11 @@ import { SITE, m2020Sol } from './lib/mission.js';
 import { FLAGS, RULES } from './lib/decision.js';
 import { createSim, INJECTIONS, missionReport } from './lib/sim.js';
 import { LOC_R95_M, offset } from './lib/mars.js';
-import droneSvg from '../svg/drone-svgrepo-com.svg?raw';
+import droneSvg from '../visuals/svg/drone-svgrepo-com.svg?raw';
 
 const FONT = '-apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, "Helvetica Neue", Helvetica, Arial, sans-serif';
 const SPEEDS = [1, 10, 60, 240], SEG = 10, HELIX = 3;
-// Scout-drone marker from svg/drone-svgrepo-com.svg, recoloured cyan. The source is thin line-art, so at map size its
+// Scout-drone marker from visuals/svg/drone-svgrepo-com.svg, recoloured cyan. The source is thin line-art, so at map size its
 // shapes are drawn twice: a wide black stroke as a halo for contrast, then cyan with a stroke that thickens the lines.
 const droneShape = droneSvg.match(/<g>([\s\S]*)<\/g>/)[1];
 const DRONE_ICON = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='128' height='128' viewBox='-30 -30 571 571'>

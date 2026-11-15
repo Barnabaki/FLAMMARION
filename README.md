@@ -95,10 +95,13 @@ src/
   viewer.js        Cesium viewer on the Mars ellipsoid + NASA Trek imagery layers
   moduleA.js       globe → quadrangles → MC-13 → NE → Jezero terrain & route
   moduleB.js       pre-mission forecast, GO / NO-GO, Start Mission
-  moduleC.js       intra-mission HUD, two screens, playback, anomaly injection
+  moduleC.js       intra-mission HUD, two screens, drone marker, demo-only simulation tools footer
   routeLayer.js    route / waypoint / crew entities shared by all modules
+  sources.js       provenance tags and the dataset list behind the Data sources panel
+  style.css        Liquid Glass UI styles
+  ui/              DOM helpers (dom.js) and line icons (icons.js)
   lib/             pure JS, no DOM — shared by browser, generator and tests
-    mars.js        spheroid constants, Vincenty geodesic, seeded PRNG, 30 cm σ
+    mars.js        spheroid constants, Vincenty geodesic, seeded PRNG, 30 cm (95 %) localization model
     marsTime.js    Mars24 (MSD, MTC, LMST, LTST, Ls, Sun elevation)
     quadrangles.js MC-01…MC-30 and quadrants
     features.js    generated: IAU-named features per region (scripts/build_features.py)
@@ -110,12 +113,22 @@ src/
     sim.js         tick-by-tick replay + anomaly scenarios + drone message
 scripts/generate-data.mjs   seeded generator for public/data and examples
 scripts/build_app_assets.py derives app assets from data/source
+scripts/build_features.py   builds src/lib/features.js from the nomenclature pull
+scripts/copy-cesium.mjs     copies Cesium runtime assets to public/cesiumStatic/ on npm install
 scripts/pull/      the team's download/aggregation scripts (MEDA, REMS, DEM)
-data/source/       pulled source data: dem/, weather/, mola/, SOURCES.json
+data/source/       pulled source data: dem/, weather/, mola/, nomenclature/, SOURCES.json
 public/data/       route.geojson, telemetry.ndjson, weather_sol.json, rems_gale_reference.json, dustdevil_scenario.*, terrain/
 drone_message_schema.json   proposed drone downlink format (+ examples/)
 tests/all.test.mjs
+visuals/           diagrams/ (architecture graphic), screens/ (screenshots), svg/ (drone marker icon)
+architecture.mmd   Mermaid source of the architecture diagram below
 ```
+
+<a href="visuals/diagrams/system%20architecture.png" title="Open the full-size diagram">
+  <img src="visuals/diagrams/system%20architecture.png" alt="FLAMMARION system architecture: NASA source data → offline pipeline → static data → shared pure-JS core → browser app (Modules A, B, C and the demo-only simulation tools) → alerts and mission report" width="100%">
+</a>
+
+<sub>Click the diagram to open it at full size (7883 × 1532 px). Source: [`architecture.mmd`](architecture.mmd).</sub>
 
 One route object (`src/lib/mission.js` → `buildPlan()`) is passed A → B → C. One CRS everywhere: IAU 2000 Mars, planetocentric latitude, east-positive longitude 0–360°E.
 
