@@ -1,6 +1,17 @@
 # FLAMMARION
 
-A 3D web app for planning and monitoring a crewed traverse on Mars. You zoom from the full globe down to Jezero Crater, review a proposed route, get a GO / NO-GO from the weather forecast, then watch the traverse play out with a scout drone, live telemetry and automatic HOLD / REROUTE / ABORT decisions. Built for a NASA hackathon; it runs entirely in the browser on real NASA imagery, terrain and Perseverance weather data.
+The FLAMMARION project addresses the challenge of an end-to-end Mars traversal mission planning and deployment application. First and foremost it is developed to ensure astronauts safety during their surface exploratory missions, for the purpose of the Hackathon an example to the Jezero Crater is shown. The project integrates terrain exploration, pre-mission environmental assessment, and real-time mission monitoring - the latter supported by an autonomous scout drone. 
+
+The app consists of three stages, guiding astronauts and mission planners through each phase of the mission:
+
+* Area-to-Region Navigation: smooth 3D zoom from a global view of Mars down to mission-specific terrain, powered by NASA/USGS orbital imagery and elevation models,  enabling broad-scale site analysis before committing to a route.
+
+* Pre-Mission Planning: A trajectory planner and environmental timelapse simulator that combines historical Curiosity and Perseverance data with emulated power telemetry to generate a clear GO / NO-GO readiness assessment.
+
+* Intra-mission Monitoring: A real-time Heads-Up Display that tracks astronaut life support, local Sol/GMT time, 30 cm-accuracy localization, and an autonomous scout drone flying 100–150 meters ahead, warning about hazardous anomalies. All supported by the 
+
+We paired real scientific datasets from NASA missions with a boolean-flag decision engine (PROCEED / HOLD / REROUTE / ABORT), to solve the challenge of planetary situational awareness. Thanks to drone inspection, we allow for detecting rapidly forming dust devils and updating terrain hazards, before they endanger human crews on Mars, to increase chances of the mission success.
+
 
 ## How to open the app
 
@@ -41,9 +52,9 @@ npm run dev
 
 | | | |
 |:---:|:---:|:---:|
-| ![Step 1](screens/1.jpg) | ![Step 2](screens/2.jpg) | ![Step 3](screens/3.jpg) |
+| ![Step 1](visuals/screens/1.jpg) | ![Step 2](visuals/screens/2.jpg) | ![Step 3](visuals/screens/3.jpg) |
 | **1.** Pick the mission and region | **2.** Zoom into Jezero Crater | **3.** Plan the route |
-| ![Step 4](screens/4.jpg) | ![Step 5](screens/5.jpg) | ![Step 6](screens/6.jpg) |
+| ![Step 4](visuals/screens/4.jpg) | ![Step 5](visuals/screens/5.jpg) | ![Step 6](visuals/screens/6.jpg) |
 | **4.** Start the mission | **5.** Watch the traverse | **6.** View the report |
 
 Hover any value to see what kind of data it is; click it to open **Data sources** at its source. The breadcrumb takes you back to any earlier level, and **Satellite / Terrain** switches the globe between imagery and MOLA elevation.
@@ -58,33 +69,6 @@ Hover any value to see what kind of data it is; click it to open **Data sources*
 | `python3 scripts/build_app_assets.py` | Rebuild the derived assets (terrain grid, route DEM crop, weather tables, MOLA crop) from `data/source/`; needs numpy, pillow, tifffile, imagecodecs. Outputs are committed. |
 
 `npm install` copies Cesium's runtime assets to `public/cesiumStatic/` (git-ignored) via `scripts/copy-cesium.mjs`.
-
-## What is in the demo
-
-- **Module A** — realistic globe (Viking colour mosaic); click the planet for the 30 official Mars Chart quadrangles; select MC-13 → NE quadrant → Jezero; optional MOLA elevation overlay; top-down HiRISE/CTX map on the CTX DEM terrain with the proposed route, waypoints, geodesic distance, DEM elevation profile and MEDA environment. Breadcrumb is clickable at every level.
-- **Module B** — forecast time-lapse along the route, predicted distance / time / battery, six explicit GO / NO-GO criteria with the driver named on NO-GO, a what-if dust event, and **Start Mission**.
-- **Module C** — replay of the stored telemetry stream at 1×–240× with scrubbing; Screen 1 (bird's-eye, camera follows the crew, free orbit) and Screen 2 (first person); crew + scout drone with localization, comm links, clocks (LMST / LTST / UTC), navigation, milestones, terrain, E-field, life support, comms; decision engine (ABORT / HOLD / PROCEED / REROUTE) with log; eight injectable anomalies including the required dust-devil → alert to crew + habitat → HOLD.
-- **Provenance** — every value carries a tag (SATELLITE, IAU, COMPUTED, HISTORIC, MODELLED, SIMULATED, EMULATED, DEMO). Global *Data sources* panel in the top bar.
-
-## Data status
-
-Integrated from the team's data pull (`data/source/`, see `DATA_SOURCES.md`):
-
-- **Weather — HISTORIC.** Air temperature, ground temperature, pressure, wind speed and UV are Perseverance/MEDA measurements (NASA PDS, sols 44–51, Ls 26–30°), averaged per local-true-solar-time hour and replayed by local time. The mission clock is a replay epoch (Perseverance sol 47, 2021-04-07).
-- **Terrain — SATELLITE.** The Jezero terrain mesh, waypoint elevations, elevation profile and slopes come from the Mars 2020 CTX DEM mosaic (20 m).
-- **MOLA.** The Satellite / Terrain toggle shows the global MGS MOLA colour shaded relief streamed from NASA Mars Trek; the MEGDR tile you pulled is archived in `data/source/mola/`.
-- **Named features.** 1,653 IAU-named features across the 30 regions, pulled from the Mars Trek nomenclature index (`data/source/nomenclature/`).
-- **REMS (Gale).** Shown in Pre-mission as a labelled reference only.
-
-Still open — read before demoing:
-
-1. **Wind direction, humidity, dust opacity τ, vortex rate and total solar flux are MODELLED** — they were not in the MEDA pull. τ and vortex rate feed two of the six GO / NO-GO criteria.
-2. **MEDA wind is sparse at night** (1–3 sols per hour bin outside 11:00–16:00 LTST).
-3. **No numeric MOLA grid** was supplied (only its colour image), so outside Jezero the terrain is the reference spheroid; the DEM edge is tapered to it over 0.6°.
-4. **Murray Lab CTX mosaic** is still missing; Jezero CTX comes from the USGS mosaics on NASA Mars Trek.
-5. **CRISM composition** is not integrated; terrain class/quality per leg is an interpretation of the HiRISE imagery (MODELLED).
-
-Details and every other assumption: `ASSUMPTIONS.md`.
 
 ## Architecture
 
