@@ -39,6 +39,13 @@ npm run dev
 5. In the mission view, switch between **Bird's-eye** and **First-person**, and use **Simulation tools** to change the playback speed or trigger a dust devil, an unmapped obstacle and other conditions.
 6. When the traverse ends, click **Show the Report**.
 
+| | | |
+|:---:|:---:|:---:|
+| ![Step 1](screens/1.jpg) | ![Step 2](screens/2.jpg) | ![Step 3](screens/3.jpg) |
+| **1.** Pick the mission and region | **2.** Zoom into Jezero Crater | **3.** Plan the route |
+| ![Step 4](screens/4.jpg) | ![Step 5](screens/5.jpg) | ![Step 6](screens/6.jpg) |
+| **4.** Start the mission | **5.** Watch the traverse | **6.** View the report |
+
 Hover any value to see what kind of data it is; click it to open **Data sources** at its source. The breadcrumb takes you back to any earlier level, and **Satellite / Terrain** switches the globe between imagery and MOLA elevation.
 
 ## Development

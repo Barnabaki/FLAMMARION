@@ -1,0 +1,109 @@
+%% FLAMMARION — system architecture
+%% Render: paste into https://mermaid.live, open with a Mermaid preview in VS Code, or run
+%%   npx -p @mermaid-js/mermaid-cli mmdc -i architecture.mmd -o architecture.svg -b "#120906"
+%% Layers read top to bottom: NASA data → offline pipeline → data files → shared core → browser app → outcomes.
+%% Solid arrows = runtime data / control flow · dotted arrows = build-time, streamed or demo-only paths.
+
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 40, "rankSpacing": 56, "padding": 16},
+  "themeVariables": {"fontFamily": "Inter, Helvetica, Arial, sans-serif", "fontSize": "14px",
+  "background": "#120906", "primaryColor": "#5a2a18", "primaryTextColor": "#f6e3cf", "primaryBorderColor": "#d9773f",
+  "lineColor": "#d98a5a", "textColor": "#f6e3cf", "clusterBkg": "#1d0f0a", "clusterBorder": "#6b3a24",
+  "edgeLabelBackground": "#2a140c", "titleColor": "#f3c9a0"}}}%%
+
+flowchart TB
+
+  subgraph SRC["① NASA source data"]
+    direction LR
+    MEDA[("Perseverance MEDA<br/>weather · sols 44–51")]
+    DEM[("MRO CTX DEM<br/>Jezero terrain · 20 m")]
+    NOM[("IAU nomenclature<br/>1,653 named features")]
+    TREK[("NASA Mars Trek tiles<br/>Viking · MOLA · CTX · HiRISE")]
+  end
+
+  subgraph PIPE["② Offline build pipeline · run once, outputs committed"]
+    direction LR
+    PULL["scripts/pull<br/>download + aggregate"]
+    ASSETS["build_app_assets.py<br/>weather tables · DEM crop"]
+    GEN["generate-data.mjs<br/>seeded · reuses src/lib"]
+  end
+
+  subgraph DATA["③ Static data · public/data"]
+    direction LR
+    ROUTE[/"route.geojson<br/>planned trajectory"/]
+    TEL[/"telemetry.ndjson<br/>mission stream · 5 s ticks"/]
+    WXF[/"weather_sol.json<br/>sol forecast"/]
+  end
+
+  subgraph CORE["④ Shared core · src/lib · pure JS · same code in browser, generator and 14 tests"]
+    direction LR
+    GEO["mars.js · marsTime.js<br/>geodesy · Mars24 clock"]
+    WX["weather.js<br/>HISTORIC + MODELLED"]
+    PLAN["mission.js · buildPlan()<br/>route · vehicle · GO criteria"]
+    SIM["sim.js<br/>tick replay · anomalies · drone message"]
+    DEC{{"decision.js<br/>ABORT › HOLD › REROUTE › PROCEED"}}
+  end
+
+  subgraph APP["⑤ Browser app · Vite + CesiumJS · one scene, three stages"]
+    direction LR
+    VIEW["viewer.js<br/>Cesium globe on Ellipsoid.MARS"]
+    A["Module A · Explore<br/>globe → MC-13 → NE → Jezero"]
+    B["Module B · Pre-mission<br/>forecast → GO / NO-GO"]
+    C["Module C · Mission<br/>live HUD · bird's-eye / first-person"]
+    TOOLS[["Simulation tools · DEMO ONLY<br/>speed · scrub · inject anomaly"]]
+  end
+
+  subgraph OUT["⑥ Outcomes"]
+    direction LR
+    ALERT["Alerts<br/>crew · habitat · Earth"]
+    REPORT["Mission report"]
+  end
+
+  %% build time
+  MEDA & DEM & NOM --> PULL --> ASSETS --> GEN
+  GEN --> ROUTE & TEL & WXF
+  ASSETS -. "generated tables" .-> WX
+
+  %% core
+  GEO --> PLAN
+  WX --> PLAN
+  PLAN --> SIM -- "frame → flags" --> DEC
+
+  %% runtime: one route object handed A → B → C
+  PLAN -- "one route object" --> A
+  A -- "Plan this route" --> B -- "GO → Start Mission" --> C
+  WX -- "forecast along route" --> B
+  TEL -- "replayed stream" --> C
+  C -- "step / seek" --> SIM
+  DEC -- "decision + log" --> C
+  TOOLS -. "inject · speed · restart" .-> SIM
+  TREK -. "streamed imagery" .-> VIEW
+
+  %% outcomes
+  DEC --> ALERT
+  C --> REPORT
+
+  %% Martian palette: basalt → rust → dust → sand
+  classDef source fill:#2b1209,stroke:#b5451b,stroke-width:1.5px,color:#f3d2b3
+  classDef pipe fill:#4a2112,stroke:#c4602c,stroke-width:1.5px,color:#f6e3cf
+  classDef data fill:#6e3016,stroke:#e08a52,stroke-width:1.5px,color:#fff1e2
+  classDef core fill:#9c3f17,stroke:#f0a46c,stroke-width:1.5px,color:#fff4e8
+  classDef app fill:#c4602c,stroke:#ffc89a,stroke-width:1.5px,color:#1e0c05
+  classDef decide fill:#e8804f,stroke:#fff0dd,stroke-width:2px,color:#1e0c05
+  classDef demo fill:#120906,stroke:#ffb000,stroke-width:1.5px,stroke-dasharray:5 4,color:#ffc24d
+  classDef out fill:#e9c9a1,stroke:#b5451b,stroke-width:1.5px,color:#2b1209
+
+  class MEDA,DEM,NOM,TREK source
+  class PULL,ASSETS,GEN pipe
+  class ROUTE,TEL,WXF data
+  class GEO,WX,PLAN,SIM core
+  class VIEW,A,B,C app
+  class DEC decide
+  class TOOLS demo
+  class ALERT,REPORT out
+
+  style SRC fill:#170a06,stroke:#5c2c19,color:#e8b48a
+  style PIPE fill:#1b0c07,stroke:#6b3a24,color:#e8b48a
+  style DATA fill:#1f0e08,stroke:#7a4228,color:#efc39c
+  style CORE fill:#24100a,stroke:#8f4b2a,color:#f3c9a0
+  style APP fill:#2a130b,stroke:#a8582f,color:#f6d3b0
+  style OUT fill:#1f0e08,stroke:#7a4228,color:#efc39c

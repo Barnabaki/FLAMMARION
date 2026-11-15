@@ -7,14 +7,21 @@ import { SITE, m2020Sol } from './lib/mission.js';
 import { FLAGS, RULES } from './lib/decision.js';
 import { createSim, INJECTIONS, missionReport } from './lib/sim.js';
 import { LOC_R95_M, offset } from './lib/mars.js';
+import droneSvg from '../svg/drone-svgrepo-com.svg?raw';
 
 const FONT = '-apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, "Helvetica Neue", Helvetica, Arial, sans-serif';
 const SPEEDS = [1, 10, 60, 240], SEG = 10, HELIX = 3;
+// Scout-drone marker from svg/drone-svgrepo-com.svg, recoloured cyan. The source is thin line-art, so at map size its
+// shapes are drawn twice: a wide black stroke as a halo for contrast, then cyan with a stroke that thickens the lines.
+const droneShape = droneSvg.match(/<g>([\s\S]*)<\/g>/)[1];
+const DRONE_ICON = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='128' height='128' viewBox='-30 -30 571 571'>
+  <g fill='#000' stroke='#000' stroke-width='44' stroke-linejoin='round'>${droneShape}</g>
+  <g fill='#64d2ff' stroke='#64d2ff' stroke-width='14' stroke-linejoin='round'>${droneShape}</g></svg>`)}`;
 const lerp = (a, b, k) => a + (b - a) * k, lerpAng = (a, b, k) => a + ((((b - a) % 360) + 540) % 360 - 180) * k;
 
 export function initC(app) {
   const { viewer } = app;
-  let sim = null, raf = 0, last = 0, playing = false, speed = 60, acc = 0, view = 'bird', m = {}, ui = {}, prev = null, cur = null, active = false, logLen = -1, alertKey = '', docks = [], dockTimer = 0;
+  let sim = null, raf = 0, last = 0, playing = false, speed = 60, acc = 0, view = 'bird', m = {}, ui = {}, prev = null, cur = null, active = false, logLen = -1, alertKey = '', docks = [], dockTimer = 0, dockObs = null, dockOpen = true, setDockOpen = () => {};
   const R = { crew: { lat: SITE.lat, lon: SITE.lon }, drone: { lat: SITE.lat, lon: SITE.lon }, heading: 0, dHeading: 0, alt: 12, dd: null }; // interpolated render state
   const S = () => sim.state;
   const CYAN = Cesium.Color.fromCssColorString('#64d2ff'), ORANGE = Cesium.Color.fromCssColorString('#ff9f0a'), RED = Cesium.Color.fromCssColorString('#ff453a'), TAN = Cesium.Color.fromCssColorString('#d9b38c');
@@ -25,8 +32,8 @@ export function initC(app) {
   const HOME = [gdeg(SITE.lon, SITE.lat), gdeg(SITE.lon, SITE.lat, 1)];
   // --- scene entities (created once, shown only while the module is active)
   const showIf = dynamicShow(viewer), add = (def, fn) => showIf(viewer.entities.add(def), fn);
-  add({ position: cb(() => gdeg(R.drone.lon, R.drone.lat, Math.max(0.6, R.alt))), point: { pixelSize: 9, color: CYAN, outlineColor: Cesium.Color.BLACK, outlineWidth: 1.5, disableDepthTestDistance: Number.POSITIVE_INFINITY },
-    label: { ...lbl('DRONE', CYAN, -16), text: cb(() => (active && S().droneState === 'LANDED' ? 'DRONE · landed' : 'DRONE')) } }, bird);
+  add({ position: cb(() => gdeg(R.drone.lon, R.drone.lat, Math.max(0.6, R.alt))), billboard: { image: DRONE_ICON, width: 18, height: 18, disableDepthTestDistance: Number.POSITIVE_INFINITY },
+    label: { ...lbl('DRONE', CYAN, -17), text: cb(() => (active && S().droneState === 'LANDED' ? 'DRONE · landed' : 'DRONE')) } }, bird);
   add({ polyline: { positions: cb(() => ringPts(R.drone.lat, R.drone.lon, 60)), width: 1.5, material: CYAN.withAlpha(0.7) } }, () => bird() && R.alt > 1); // scan footprint
   add({ polyline: { positions: cb(() => [gdeg(R.crew.lon, R.crew.lat, 1.5), gdeg(R.drone.lon, R.drone.lat, Math.max(0.6, R.alt))]), width: 1.5, material: new Cesium.PolylineDashMaterialProperty({ color: CYAN.withAlpha(0.8), dashLength: 10 }) } }, bird);
   add({ polyline: { positions: cb(() => [gdeg(SITE.lon, SITE.lat, 3), gdeg(R.crew.lon, R.crew.lat, 1.5)]), width: 1,
@@ -105,10 +112,25 @@ export function initC(app) {
     ui.slider = h('input', { type: 'range', min: 0, max: Math.ceil((p.duration + 900) / sim.dt), value: 0, oninput: (e) => { sim.seek(+e.target.value); resync(); } });
     ui.time = h('span.t', {}, '');
     ui.speeds = SPEEDS.map((v) => h(`button${v === speed ? '.on' : ''}`, { onclick: () => { speed = v; ui.speeds.forEach((b, i) => b.classList.toggle('on', SPEEDS[i] === v)); } }, `${v}×`));
-    app.slots.bottom.replaceChildren(h('.simtools.glass', {},
-      h('.hd', {}, h('b', {}, 'SIMULATION TOOLS'), h('span', {}, 'These controls simulate mission conditions to show how the flight software would respond during a real mission.'), h('button', { onclick: restart }, icon('restart', 15), 'Restart')),
-      h('.controls', {}, ui.play, h('.seg.glass', {}, ui.speeds), ui.slider, ui.time),
-      h('.injects', {}, Object.entries(INJECTIONS).map(([k, d]) => h(`button${k === 'dust_devil' ? '.dd' : ''}`, { title: `Expected response: ${d.expect}`, onclick: () => inject(k) }, d.label)))));
+    // Simulation tools live in a black footer docked under the mission view, so they read as a demo harness around
+    // the mission rather than part of it. Its visible height is published as --dock (animated in CSS) so the HUD
+    // moves with it; the handle slides the whole footer away. The same footer serves both camera views.
+    const parts = [
+      h('.sd-id', { tabindex: 0, 'aria-describedby': 'sd-tip' }, h('span.sd-tag', {}, 'Demo'),
+        h('.sd-tip', { id: 'sd-tip', role: 'tooltip' }, h('b', {}, 'Simulation tools'), ' — the controls simulate conditions to show how the flight software would respond during a real mission.')),
+      h('.sd-col', {}, h('.sd-lab', {}, 'Playback'), h('.controls', {}, ui.play, h('.seg', {}, ui.speeds), ui.slider, ui.time)),
+      h('.sd-col.sd-inj', {}, h('.sd-lab', {}, 'Inject a condition'),
+        h('.injects', {}, Object.entries(INJECTIONS).map(([k, d]) => h(`button${k === 'dust_devil' ? '.dd' : ''}`, { title: `Expected response: ${d.expect}`, onclick: () => inject(k) }, d.label)))),
+      h('button.sd-restart', { onclick: restart }, icon('restart', 15), 'Restart')];
+    const toggle = h('button.sd-toggle', { onclick: () => setDockOpen(!dockOpen) }, icon('chevR', 15));
+    const simdock = h('footer.simdock', { 'aria-label': 'Simulation tools — demo only, not part of the mission' }, toggle, parts);
+    const syncDock = () => document.documentElement.style.setProperty('--dock', dockOpen ? `${Math.ceil(simdock.offsetHeight)}px` : 'var(--dock-min)');
+    setDockOpen = (v) => { dockOpen = v; simdock.classList.toggle('closed', !v); parts.forEach((el) => (el.inert = !v));
+      toggle.title = v ? 'Hide simulation tools' : 'Show simulation tools'; toggle.setAttribute('aria-expanded', String(v)); syncDock(); };
+    app.slots.bottom.replaceChildren(simdock);
+    dockObs?.disconnect(); document.documentElement.classList.add('sim-on');
+    dockObs = new ResizeObserver(syncDock); dockObs.observe(simdock);
+    setDockOpen(dockOpen);
     sidePanels();
   }
   function restart() { sim.reset(); resync(); setPlaying(true); }
@@ -224,6 +246,6 @@ export function initC(app) {
     app.routeLayer.show(true); app.crew.show = true; app.crew.lat = cur.crew.lat; app.crew.lon = cur.crew.lon;
     build(); setView('bird'); setPlaying(true); last = performance.now(); raf = requestAnimationFrame(frame);
   }
-  function leave() { cancelAnimationFrame(raf); clearTimeout(dockTimer); active = false; playing = false; viewer.trackedEntity = undefined; viewer.scene.backgroundColor = Cesium.Color.fromCssColorString('#050508'); if (viewer.scene.skyAtmosphere) viewer.scene.skyAtmosphere.show = true; }
+  function leave() { cancelAnimationFrame(raf); clearTimeout(dockTimer); dockObs?.disconnect(); dockObs = null; document.documentElement.classList.remove('sim-on'); document.documentElement.style.removeProperty('--dock'); active = false; playing = false; viewer.trackedEntity = undefined; viewer.scene.backgroundColor = Cesium.Color.fromCssColorString('#050508'); if (viewer.scene.skyAtmosphere) viewer.scene.skyAtmosphere.show = true; }
   return { enter, leave };
 }

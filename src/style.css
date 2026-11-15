@@ -121,9 +121,44 @@ details summary { color: var(--dim); cursor: pointer; margin: 14px 0 4px; font-s
 .alert.abort { border-color: rgba(255, 69, 58, .75); } .alert.reroute, .alert.info { border-color: rgba(100, 210, 255, .6); }
 .alert b { letter-spacing: .14em; font-size: 10.5px; font-weight: 600; display: flex; align-items: center; gap: 7px; margin-bottom: 4px; } .alert small { color: var(--dim); }
 .alert .to { display: flex; gap: 14px; font-size: 11.5px; color: var(--dim); margin-top: 7px; flex-wrap: wrap; } .alert .to span { display: inline-flex; align-items: center; gap: 4px; } .alert .to svg.ic { width: 13px; height: 13px; color: var(--go); }
-.simtools { position: absolute; left: 388px; right: 388px; bottom: 44px; padding: 14px 18px 15px; border-radius: 24px; }
-.simtools .hd { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; } .simtools .hd span { flex: 1; } .simtools .hd button { font-size: 12px; padding: 5px 12px; white-space: nowrap; } .simtools .hd b { font-size: 10.5px; letter-spacing: .16em; font-weight: 600; white-space: nowrap; } .simtools .hd span { color: var(--faint); font-size: 11.5px; }
-.simtools .seg button { padding: 5px 11px; font-size: 12.5px; } .injects { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 11px; } .injects button { font-size: 12px; padding: 5px 12px; } .injects button.dd { border-color: rgba(255, 159, 10, .7); color: var(--amber); }
+/* ---- simulation dock: a black footer docked under the mission view, visually outside the mission --------------- */
+/* --dock is the footer's visible height. Registered as a <length> so every element positioned from it animates in step
+   with the footer's own slide (the map canvas itself stays full-size underneath, so nothing is re-rendered mid-slide). */
+@property --dock { syntax: '<length>'; inherits: true; initial-value: 0px; }
+:root { --dock-min: 14px; --dock-ease: .5s cubic-bezier(.32, .72, 0, 1); }
+html.sim-on { transition: --dock var(--dock-ease); }
+.simdock { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr) auto; align-items: center;
+  padding: 18px 28px 20px; background: #000; border-top: 1px solid var(--hair); transition: transform var(--dock-ease); }
+.simdock.closed { transform: translateY(calc(100% - var(--dock-min))); }
+.simdock > .sd-col { border-left: 1px solid rgba(255, 255, 255, .1); padding-left: 28px; margin-left: 28px; align-self: stretch; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+.simdock > :not(.sd-toggle) { transition: opacity .3s ease; } .simdock.closed > :not(.sd-toggle) { opacity: 0; }
+/* collapse handle: a small circle centred on the footer's top edge */
+button.sd-toggle { position: absolute; left: 50%; top: 0; transform: translate(-50%, -50%); width: 30px; height: 30px; padding: 0; justify-content: center; background: #000; z-index: 1; }
+button.sd-toggle:hover:not(:disabled) { background: #1c1c20; } button.sd-toggle:active:not(:disabled) { transform: translate(-50%, -50%) scale(.94); }
+.sd-toggle svg.ic { transform: rotate(90deg); transition: transform var(--dock-ease); color: var(--fg); } .simdock.closed .sd-toggle svg.ic { transform: rotate(-90deg); }
+/* DEMO tag + hover/focus explanation */
+.sd-id { align-self: center; outline: none; cursor: help; padding: 6px 2px; }
+.sd-tag { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; font-weight: 650; color: var(--amber); white-space: nowrap; }
+.sd-tip { position: absolute; left: 20px; bottom: calc(100% + 12px); width: 300px; padding: 12px 15px; border-radius: 16px; font-size: 12px; line-height: 1.45; color: var(--dim);
+  background: #111114; border: 1px solid var(--hair); box-shadow: 0 12px 30px rgba(0, 0, 0, .5); opacity: 0; transform: translateY(4px); pointer-events: none; transition: opacity .2s, transform .2s; }
+.sd-tip b { color: var(--fg); font-weight: 600; }
+.sd-id:hover .sd-tip, .sd-id:focus-visible .sd-tip { opacity: 1; transform: none; } .sd-id:focus-visible .sd-tag { text-decoration: underline; text-underline-offset: 4px; }
+.sd-lab { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); font-weight: 500; margin-bottom: 8px; }
+.simdock .controls { flex-wrap: nowrap; } .simdock .controls .t { min-width: 0; white-space: nowrap; }
+.simdock .seg { background: rgba(255, 255, 255, .07); border: 1px solid var(--hair); flex: none; } .simdock .seg button { padding: 5px 11px; font-size: 12.5px; }
+.injects { display: flex; flex-wrap: wrap; gap: 7px; } .injects button { font-size: 12px; padding: 5px 12px; background: rgba(255, 255, 255, .06); } .injects button.dd { border-color: rgba(255, 159, 10, .7); color: var(--amber); }
+button.sd-restart { font-size: 12px; padding: 7px 14px; white-space: nowrap; margin-left: 28px; }
+/* the mission HUD ends where the dock begins — identical in bird's-eye and first-person */
+html.sim-on .shade { display: none; }
+html.sim-on .footer { bottom: calc(var(--dock) + 12px); } html.sim-on .zoom { bottom: calc(var(--dock) + 18px); }
+html.sim-on .panel.left { max-height: calc(100% - 140px - var(--dock)); } html.sim-on .panel.right { max-height: calc(100% - 270px - var(--dock)); }
+html.sim-on .dock .panel { max-height: calc(100vh - 200px - var(--dock)); overflow: auto; }
+html.sim-on .reportbtn { top: calc(50% - var(--dock) / 2); }
+@media (max-width: 1380px) {
+  .simdock { grid-template-columns: auto minmax(0, 1fr) auto; row-gap: 14px; padding: 16px 20px 18px; }
+  .simdock .sd-id { grid-column: 1; grid-row: 1 / span 2; } .simdock .sd-col { grid-column: 2; } .simdock .sd-restart { grid-column: 3; grid-row: 1 / span 2; }
+  .simdock > .sd-inj { padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, .1); }
+}
 .log { font-size: 12px; max-height: 130px; overflow: auto; scrollbar-width: none; } .log div { padding: 6px 0; border-top: 1px solid rgba(255, 255, 255, .08); } .log div:first-child { border: 0; } .log .tt { color: var(--dim); font-variant-numeric: tabular-nums; margin-right: 8px; } .log small { color: var(--dim); }
 pre.feed { font: 10.5px/1.4 ui-monospace, "SF Mono", Menlo, monospace; color: var(--dim); max-height: 150px; overflow: auto; margin: 0; white-space: pre-wrap; }
 .reportbtn { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 16px 30px; font-size: 16px; font-weight: 600; border-radius: 999px; z-index: 5; animation: fadeIn .4s ease both; }
@@ -153,4 +188,4 @@ pre.feed { font: 10.5px/1.4 ui-monospace, "SF Mono", Menlo, monospace; color: va
 .report .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; } .report .card { border-radius: 20px; padding: 16px 18px; background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.1); } .report .card.wide { grid-column: 1 / -1; }
 .report .card h2 { border: 0; padding: 0; margin: 0 0 8px; } .report .big { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 18px; } .report .big div b { display: block; font-size: 24px; font-weight: 650; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; } .report .big small { color: var(--dim); }
 .report .ev { padding: 8px 0; border-top: 1px solid rgba(255, 255, 255, .09); color: var(--dim); } .report .ev:first-of-type { border: 0; } .report .ev b { color: var(--fg); font-weight: 600; }
-@media (max-width: 1180px) { .timeline, .simtools { left: 24px; right: 24px; } .panel { width: 310px; } }
+@media (max-width: 1180px) { .timeline { left: 24px; right: 24px; } .panel { width: 310px; } }
