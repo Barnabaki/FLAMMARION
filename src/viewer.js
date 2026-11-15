@@ -8,6 +8,7 @@ export { Cesium };
 const TREK = 'https://trek.nasa.gov/tiles/Mars/EQ';
 export const LAYERS = [
   { id: 'viking', label: 'Viking MDIM 2.1 colour mosaic (232 m/px)', product: 'Mars_Viking_MDIM21_ClrMosaic_global_232m', ext: 'jpg', max: 7, credit: 'NASA / JPL / USGS — Viking Orbiter MDIM 2.1' },
+  { id: 'mola', label: 'MGS MOLA colour shaded relief (463 m/px)', product: 'Mars_MGS_MOLA_ClrShade_merge_global_463m', ext: 'jpg', max: 7, credit: 'NASA / MGS MOLA Science Team / USGS' },
   { id: 'ctx_regional', label: 'MRO CTX mosaic, Jezero region (preliminary)', product: 'Jezero_CTX_BlockAdj_dd', ext: 'png', max: 12, rect: [75.1537692, 15.9058484, 78.8717121, 19.4453003], credit: 'NASA / JPL / MSSS / USGS — MRO CTX' },
   { id: 'ctx', label: 'MRO CTX orthomosaic, Jezero (6 m/px, controlled)', product: 'JEZ_ctx_B_soc_008_orthoMosaic_6m_Eqc_latTs0_lon0', ext: 'png', max: 13, rect: [77.1604655, 18.2110274, 77.6991776, 18.7211945], credit: 'NASA / JPL / MSSS / USGS — MRO CTX' },
   { id: 'hirise', label: 'MRO HiRISE orthomosaic, Jezero (25 cm/px, controlled)', product: 'JEZ_hirise_soc_006_orthoMosaic_25cm_Eqc_latTs0_lon0_first_dd', ext: 'png', max: 17, rect: [77.2229331, 18.3067994, 77.583964, 18.669315], credit: 'NASA / JPL / University of Arizona / USGS — MRO HiRISE' },
@@ -38,7 +39,11 @@ export function createViewer(container) {
     });
     layers[L.id] = viewer.imageryLayers.addImageryProvider(provider);
   }
-  layers.viking.saturation = 1.05;
+  // Natural Martian tones: a little more saturation and contrast, no hue shift.
+  layers.viking.saturation = 1.38; layers.viking.contrast = 1.14; layers.viking.gamma = 0.94; layers.viking.hue = 0.09;
+  layers.mola.show = false;
+  // Soft limb haze (no neon): Cesium's sky atmosphere on the Mars ellipsoid, shifted from blue to dusty orange.
+  try { const sky = new Cesium.SkyAtmosphere(Cesium.Ellipsoid.MARS); sky.hueShift = 0.47; sky.saturationShift = 0.15; sky.brightnessShift = -0.05; scene.skyAtmosphere = sky; } catch { /* optional */ }
   return { viewer, layers };
 }
 
@@ -87,11 +92,4 @@ export async function loadTerrain(viewer) {
     } });
   viewer.scene.globe.depthTestAgainstTerrain = false;
   return { meta, heightAt: groundH };
-}
-
-/** MGS MOLA MEGDR megt44n000hb colour-coded elevation image (PDS ODE rendering), cropped to MC-13. */
-export function addMolaLayer(viewer) {
-  const layer = viewer.imageryLayers.addImageryProvider(new Cesium.SingleTileImageryProvider({ url: './data/mola_mc13_altcolor.jpg', tileWidth: 2880, tileHeight: 1920,
-    rectangle: Cesium.Rectangle.fromDegrees(45, 0, 90, 30), credit: 'NASA / MGS MOLA Science Team / PDS Geosciences Node' }));
-  layer.alpha = 0.6; layer.show = false; return layer;
 }

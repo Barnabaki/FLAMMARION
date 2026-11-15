@@ -7,13 +7,13 @@
   "demo_only": true,
   "disclaimer": "Demonstration route created for FLAMMARION. It is NOT a path travelled by NASA's Perseverance rover.",
   "start_utc_simulated": "2021-04-07T21:10:27.000Z",
-  "end_utc_simulated": "2021-04-07T22:48:40.792Z",
+  "end_utc_simulated": "2021-04-07T22:24:40.792Z",
   "depart_lmst": "09:30",
   "ls_deg": 28.4,
   "mars_year": 36,
   "replay_epoch_m2020_sol": 47,
   "total_distance_m": 2600.3,
-  "duration_s": 5894,
+  "duration_s": 4454,
   "distance_method": "Vincenty inverse geodesic on the Mars spheroid, summed per segment",
   "elevation_provenance": "SATELLITE — bilinear sample of M20_JezeroCrater_CTXDEM_20m.tif (20 m, urn:nasa:pds:mars2020_ctx_basemap_2021:data:m20_ctxdem_mosaic); datum: elevation of the source DEM (MOLA areoid)",
   "total_climb_m": 42.3,
@@ -396,9 +396,9 @@
     "segment_drive_s": 319,
     "terrain": "fractured bedrock",
     "terrain_quality": 0.82,
-    "stop_s": 480,
+    "stop_s": 240,
     "arrive_met_s": 319,
-    "depart_met_s": 799,
+    "depart_met_s": 559,
     "arrive_utc_simulated": "2021-04-07T21:15:46.303Z",
     "arrive_lmst_h": 9.586
    }
@@ -425,11 +425,11 @@
     "segment_drive_s": 386,
     "terrain": "fractured bedrock",
     "terrain_quality": 0.85,
-    "stop_s": 480,
-    "arrive_met_s": 1186,
-    "depart_met_s": 1666,
-    "arrive_utc_simulated": "2021-04-07T21:30:12.525Z",
-    "arrive_lmst_h": 9.821
+    "stop_s": 240,
+    "arrive_met_s": 946,
+    "depart_met_s": 1186,
+    "arrive_utc_simulated": "2021-04-07T21:26:12.525Z",
+    "arrive_lmst_h": 9.756
    }
   },
   {
@@ -454,11 +454,11 @@
     "segment_drive_s": 511,
     "terrain": "smooth regolith",
     "terrain_quality": 0.9,
-    "stop_s": 480,
-    "arrive_met_s": 2176,
-    "depart_met_s": 2656,
-    "arrive_utc_simulated": "2021-04-07T21:46:43.106Z",
-    "arrive_lmst_h": 10.088
+    "stop_s": 240,
+    "arrive_met_s": 1696,
+    "depart_met_s": 1936,
+    "arrive_utc_simulated": "2021-04-07T21:38:43.106Z",
+    "arrive_lmst_h": 9.959
    }
   },
   {
@@ -483,11 +483,11 @@
     "segment_drive_s": 556,
     "terrain": "smooth regolith",
     "terrain_quality": 0.88,
-    "stop_s": 480,
-    "arrive_met_s": 3212,
-    "depart_met_s": 3692,
-    "arrive_utc_simulated": "2021-04-07T22:03:59.212Z",
-    "arrive_lmst_h": 10.368
+    "stop_s": 240,
+    "arrive_met_s": 2492,
+    "depart_met_s": 2732,
+    "arrive_utc_simulated": "2021-04-07T21:51:59.212Z",
+    "arrive_lmst_h": 10.174
    }
   },
   {
@@ -512,11 +512,11 @@
     "segment_drive_s": 246,
     "terrain": "rocky apron with ripples",
     "terrain_quality": 0.65,
-    "stop_s": 480,
-    "arrive_met_s": 3938,
-    "depart_met_s": 4418,
-    "arrive_utc_simulated": "2021-04-07T22:16:04.977Z",
-    "arrive_lmst_h": 10.565
+    "stop_s": 240,
+    "arrive_met_s": 2978,
+    "depart_met_s": 3218,
+    "arrive_utc_simulated": "2021-04-07T22:00:04.977Z",
+    "arrive_lmst_h": 10.305
    }
   },
   {
@@ -541,11 +541,11 @@
     "segment_drive_s": 312,
     "terrain": "rocky apron",
     "terrain_quality": 0.6,
-    "stop_s": 480,
-    "arrive_met_s": 4730,
-    "depart_met_s": 5210,
-    "arrive_utc_simulated": "2021-04-07T22:29:17.175Z",
-    "arrive_lmst_h": 10.779
+    "stop_s": 240,
+    "arrive_met_s": 3530,
+    "depart_met_s": 3770,
+    "arrive_utc_simulated": "2021-04-07T22:09:17.175Z",
+    "arrive_lmst_h": 10.454
    }
   },
   {
@@ -571,10 +571,10 @@
     "terrain": "rocky apron",
     "terrain_quality": 0.55,
     "stop_s": 0,
-    "arrive_met_s": 5894,
-    "depart_met_s": 5894,
-    "arrive_utc_simulated": "2021-04-07T22:48:40.792Z",
-    "arrive_lmst_h": 11.093
+    "arrive_met_s": 4454,
+    "depart_met_s": 4454,
+    "arrive_utc_simulated": "2021-04-07T22:24:40.792Z",
+    "arrive_lmst_h": 10.704
    }
   }
  ]

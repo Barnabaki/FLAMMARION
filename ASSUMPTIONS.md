@@ -40,3 +40,19 @@
 - **Scrubbing** replays the simulation from tick 0 including injected anomalies, so the state at a given time is reproducible.
 - **Typography.** `"Helvetica Neue", Helvetica, Arial, sans-serif`; no web font is bundled.
 - **Attribution** is shown in the footer and the Data sources panel; Cesium's default credit box is hidden.
+
+## D. Interface redesign (Liquid Glass) — decisions
+
+- **Provenance without badges.** Pill tags are gone. Every value is an inline citation: on hover it underlines and shows its category as plain text (HISTORIC, MODELLED, SIMULATED …); on click it opens Data sources at its entry. The category is therefore visible on hover rather than permanently; sentences in the panels still state when weather is archived or the clock is a replay.
+- **"Isidis Basin".** The IAU name is Isidis Planitia; that is what is shown.
+- **Notable features** are the top-ranked IAU features of each region. The ranking (feature type plus a list of well-known names) is an editorial choice; names and coordinates are IAU data. For MC-13 the four features named in the design brief are pinned first.
+- **Every region is explorable** down to its feature list. Only Jezero Crater leads into a mission; other features zoom in and say so. The two polar charts have no quadrant view.
+- **Satellite / Terrain.** Terrain shows the global MOLA colour shaded relief from Mars Trek at 60 % of the detailed imagery near Jezero.
+- **Limb haze.** A thin dusty-orange atmosphere rim is drawn with Cesium's sky atmosphere; it is cosmetic.
+- **Mission select.** One mission (Jezero Crater); "Add Mission" is deliberately disabled.
+- **Drone at waypoints.** Measurement stops are 4 min (were 8). While the crew works at a waypoint the scout drone lands ahead of them and rests in low power, then takes off for the next leg. The mission is complete once the drone has landed at the destination.
+- **Obstacle discovery.** An injected obstacle appears inside the drone's scan footprint, ~40 m beyond the drone (≈ 165 m ahead of the crew); the re-route starts once it is within 150 m. Both crew and drone divert by 14 m. The driven and flown tracks keep the detour and obstacle markers stay until Restart.
+- **Dust devil model.** The vortex is advected by the ambient wind (speed and direction from the weather channels) with a wandering heading and speed (first-order autoregressive noise, seeded so a replay is identical), lives 200 s, and fades in and out. It is spawned upwind of a point 110 m ahead of the crew so that it threatens the route. It is a plausible motion model, not one fitted to Martian vortex statistics.
+- **First-person view** is the scout drone's camera (pitched 14° down). Its side panels show only altitude, ground speed, heading/pitch, battery, next-waypoint distance and status, and retract to edge straps after ~2.5 s (8 s after any interaction).
+- **Colour-coded telemetry.** Values with a defined limit are green when nominal, amber at caution, red at critical; values without a limit stay white.
+- **Report.** "Flown by drone" is the drone's actual track length (it leads the crew and hovers back at the end, so it differs from the route length); "Driven by crew" includes detours. Battery is the emulated rover battery — the drone has no separate battery model.

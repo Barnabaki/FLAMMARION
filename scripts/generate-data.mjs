@@ -72,7 +72,7 @@ writeFileSync(out + 'telemetry.ndjson', [header, ...stream].map((x) => JSON.stri
 const sim = createSim({ plan, stream, startUtcMs: t0 });
 sim.inject('dust_devil', 240);
 const lines = []; let example = null, nominal = null;
-while (sim.state.tick < 300) {
+while (sim.state.tick < 320) {
   const S = sim.step();
   if (S.tick === 200) nominal = S.frame.drone;
   if (S.tick >= 236) lines.push({ tick: S.tick, t: S.t, decision: S.decision, flags: Object.keys(S.active), status: S.status, efield_vm: Math.round(S.frame.efield_vm), drone: S.frame.drone });

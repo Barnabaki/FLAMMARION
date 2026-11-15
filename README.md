@@ -32,12 +32,14 @@ npm run dev
 
 ### Using it
 
-1. Click the planet to show the 30 map regions, then click **MC-13 Syrtis Major**, the **NE** quadrant and **Jezero Crater**.
-2. On the route map, click **Plan this route → Pre-mission**.
-3. Watch the forecast time-lapse and, with the assessment at **GO**, click **Start Mission →**.
-4. In the mission view, switch between **Bird's-eye** and **First-person**, change the playback speed, and click **Dust devil ahead** to trigger the anomaly demo.
+1. Pick the **Jezero Crater** mission, then click the planet to show the 30 official map regions.
+2. Hover a region to preview it, click **MC-13 Syrtis Major**, then the **NE** quadrant, then **Jezero Crater** (on the map or in the feature list). An orange pulse marks the mission site on the way down.
+3. Inspect the site and click **Plan this route**.
+4. Watch the forecast and, with the assessment at **GO**, click **Start Mission**.
+5. In the mission view, switch between **Bird's-eye** and **First-person**, and use **Simulation tools** to change the playback speed or trigger a dust devil, an unmapped obstacle and other conditions.
+6. When the traverse ends, click **Show the Report**.
 
-The breadcrumb in the top bar takes you back to any earlier level, and **Data sources** lists where every value comes from.
+Hover any value to see what kind of data it is; click it to open **Data sources** at its source. The breadcrumb takes you back to any earlier level, and **Satellite / Terrain** switches the globe between imagery and MOLA elevation.
 
 ## Development
 
@@ -45,7 +47,7 @@ The breadcrumb in the top bar takes you back to any earlier level, and **Data so
 | --- | --- |
 | `npm run build` / `npm run preview` | Production build into `dist/` and local preview |
 | `npm run generate` | Regenerate every file in `public/data/` and `examples/` (deterministic, seeded) |
-| `npm test` | 13 checks: geodesy, Mars24 reference epoch, quadrangle geometry, 30 cm localization model, decision engine, all anomaly scenarios, drone-schema validation, DEM and MEDA consistency with the source files |
+| `npm test` | 14 checks: geodesy, Mars24 reference epoch, quadrangle geometry, 30 cm localization model, decision engine, all anomaly scenarios, drone-schema validation, DEM and MEDA consistency with the source files |
 | `python3 scripts/build_app_assets.py` | Rebuild the derived assets (terrain grid, route DEM crop, weather tables, MOLA crop) from `data/source/`; needs numpy, pillow, tifffile, imagecodecs. Outputs are committed. |
 
 `npm install` copies Cesium's runtime assets to `public/cesiumStatic/` (git-ignored) via `scripts/copy-cesium.mjs`.
@@ -63,7 +65,8 @@ Integrated from the team's data pull (`data/source/`, see `DATA_SOURCES.md`):
 
 - **Weather — HISTORIC.** Air temperature, ground temperature, pressure, wind speed and UV are Perseverance/MEDA measurements (NASA PDS, sols 44–51, Ls 26–30°), averaged per local-true-solar-time hour and replayed by local time. The mission clock is a replay epoch (Perseverance sol 47, 2021-04-07).
 - **Terrain — SATELLITE.** The Jezero terrain mesh, waypoint elevations, elevation profile and slopes come from the Mars 2020 CTX DEM mosaic (20 m).
-- **MOLA.** The MGS MOLA MEGDR colour-coded elevation image is an optional overlay on MC-13.
+- **MOLA.** The Satellite / Terrain toggle shows the global MGS MOLA colour shaded relief streamed from NASA Mars Trek; the MEGDR tile you pulled is archived in `data/source/mola/`.
+- **Named features.** 1,653 IAU-named features across the 30 regions, pulled from the Mars Trek nomenclature index (`data/source/nomenclature/`).
 - **REMS (Gale).** Shown in Pre-mission as a labelled reference only.
 
 Still open — read before demoing:
@@ -90,7 +93,8 @@ src/
   lib/             pure JS, no DOM — shared by browser, generator and tests
     mars.js        spheroid constants, Vincenty geodesic, seeded PRNG, 30 cm σ
     marsTime.js    Mars24 (MSD, MTC, LMST, LTST, Ls, Sun elevation)
-    quadrangles.js MC-01…MC-30, quadrants, IAU features of MC-13 NE
+    quadrangles.js MC-01…MC-30 and quadrants
+    features.js    generated: IAU-named features per region (scripts/build_features.py)
     weather.js     MEDA hourly means (HISTORIC) + modelled channels; REMS reference
     weatherTable.js, demRoute.js   generated from data/source by build_app_assets.py
     dem.js         elevation lookup on the 20 m CTX DEM crop
@@ -101,7 +105,7 @@ scripts/generate-data.mjs   seeded generator for public/data and examples
 scripts/build_app_assets.py derives app assets from data/source
 scripts/pull/      the team's download/aggregation scripts (MEDA, REMS, DEM)
 data/source/       pulled source data: dem/, weather/, mola/, SOURCES.json
-public/data/       route.geojson, telemetry.ndjson, weather_sol.json, rems_gale_reference.json, dustdevil_scenario.*, terrain/, mola_mc13_altcolor.jpg
+public/data/       route.geojson, telemetry.ndjson, weather_sol.json, rems_gale_reference.json, dustdevil_scenario.*, terrain/
 drone_message_schema.json   proposed drone downlink format (+ examples/)
 tests/all.test.mjs
 ```

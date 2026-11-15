@@ -1,26 +1,27 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "flammarion.drone/1.0",
+  "$id": "flammarion.drone/1.1",
   "title": "FLAMMARION scout-drone downlink message (PROPOSED format)",
   "description": "Proposed message the EVA crew and habitat receive from the scout drone flying 100–150 m ahead of the crew. No such drone data exists: every message in this prototype is SIMULATED. Update rate: 0.2 Hz nominal in the demo stream (one message per 5 s simulation tick); the format is intended for 1 Hz nominal and 5 Hz while any dust_devils[] entry has confidence ≥ 0.5. Coordinates: IAU 2000 Mars, planetocentric latitude, east-positive longitude, decimal degrees. All confidences are probabilities in [0, 1].",
   "type": "object",
   "required": ["schema", "msg_id", "timestamp_utc", "mission_elapsed_s", "provenance", "pose", "scan_footprint", "atmosphere", "dust_devils", "terrain_updates", "link"],
   "additionalProperties": false,
   "properties": {
-    "schema": { "const": "flammarion.drone/1.0" },
+    "schema": { "const": "flammarion.drone/1.1" },
     "msg_id": { "type": "integer", "minimum": 0, "description": "Monotonic message counter" },
     "timestamp_utc": { "type": "string", "description": "ISO 8601 UTC time of the scan (simulated mission clock)" },
     "mission_elapsed_s": { "type": "number", "minimum": 0, "description": "Mission elapsed time, SI seconds" },
     "provenance": { "enum": ["SIMULATED", "MEASURED"], "description": "Always SIMULATED in this prototype" },
     "pose": {
       "type": "object", "additionalProperties": false,
-      "required": ["lat", "lon", "alt_agl_m", "heading_deg", "ground_speed_ms", "position_sigma_m", "lead_distance_m"],
+      "required": ["lat", "lon", "alt_agl_m", "heading_deg", "ground_speed_ms", "flight_state", "position_sigma_m", "lead_distance_m"],
       "properties": {
         "lat": { "type": "number", "minimum": -90, "maximum": 90, "description": "Estimated latitude, deg" },
         "lon": { "type": "number", "minimum": 0, "maximum": 360, "description": "Estimated east longitude, deg" },
-        "alt_agl_m": { "type": "number", "minimum": 0, "description": "Altitude above ground level, m" },
+        "alt_agl_m": { "type": "number", "minimum": 0, "description": "Altitude above ground level, m (0 when landed)" },
         "heading_deg": { "type": "number", "minimum": 0, "maximum": 360, "description": "Heading clockwise from north, deg" },
         "ground_speed_ms": { "type": "number", "minimum": 0, "description": "Ground speed, m/s" },
+        "flight_state": { "enum": ["FLYING", "LANDING", "LANDED", "TAKEOFF"], "description": "LANDED = on the surface in low-power rest while the crew works at a waypoint (alt_agl_m = 0)" },
         "position_sigma_m": { "type": "number", "minimum": 0, "description": "1σ horizontal position uncertainty per axis, m (0.1226 m ⇒ 0.30 m at 95 %)" },
         "lead_distance_m": { "type": "number", "minimum": 0, "description": "Along-track distance ahead of the crew, m (nominal 100–150; shrinks at the end of the route)" }
       }

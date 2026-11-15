@@ -23,6 +23,7 @@ Evaluated on every 5 s frame. Output is exactly one of **ABORT > HOLD > REROUTE 
 **Debounce:** a flag is raised only after it is true on 2 consecutive frames (10 s).
 **Hold-off (hysteresis):** a raised flag clears only after it has been false for 30 s.
 **ABORT is latched:** once issued the mission ends ("return to habitat"); it does not revert.
+**Scout drone:** lands and rests in low power while the crew takes measurements at a waypoint and at the destination; flies otherwise.
 **Behaviour:** HOLD → crew stationary; REROUTE → crew continues at 60 % speed on a corrected path (14 m lateral detour around an obstacle, or steering back to the planned track); PROCEED → nominal speed.
 **Log:** every decision change is recorded with mission time, previous decision and all active flags with their trigger values (Decision log panel; `public/data/dustdevil_scenario_decisions.json`).
 **Alerts:** any active flag shows an anomaly alert marked as delivered to crew and habitat; Mission Control on Earth is shown with the one-way light-time delay.
@@ -31,8 +32,8 @@ Evaluated on every 5 s frame. Output is exactly one of **ABORT > HOLD > REROUTE 
 
 | Button | Effect | Expected |
 | --- | --- | --- |
-| Dust devil ahead | Vortex spawns ~285 m from the crew and drifts across the path at 4.2 m/s for 170 s; E-field and opacity rise | HOLD → PROCEED |
-| Unmapped obstacle | Boulder field 95 m ahead on the track | REROUTE → PROCEED |
+| Dust devil | Vortex spawns upwind of a point 110 m ahead of the crew, is carried by the ambient wind on a wandering path for 200 s; E-field and opacity rise | HOLD → PROCEED |
+| Unmapped obstacle | Boulder field found in the drone's scan footprint, ≈ 165 m ahead of the crew; re-route starts within 150 m | REROUTE → PROCEED |
 | Localization drift | Cross-track bias grows 0.15 m/s to > 2 m, then is steered out | REROUTE → PROCEED |
 | Comms dropout | RSSI −104 dBm for 120 s | HOLD → PROCEED |
 | Suit CO₂ rise | ppCO₂ peaks ≈ 1.4 kPa over 180 s | HOLD → PROCEED |

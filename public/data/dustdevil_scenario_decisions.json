@@ -9,7 +9,7 @@
     {
      "flag": "dust_devil",
      "action": "HOLD",
-     "detail": "conf 0.95, range 230 m, TTI 47 s"
+     "detail": "conf 0.95, range 78 m, TTI 13 s"
     }
    ]
   },
@@ -28,7 +28,7 @@
    "flags": [
     "dust_devil"
    ],
-   "text": "dust_devil: conf 0.95, range 230 m, TTI 47 s",
+   "text": "dust_devil: conf 0.95, range 78 m, TTI 13 s",
    "delivered": {
     "crew": true,
     "habitat": true,

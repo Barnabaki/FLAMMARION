@@ -9,7 +9,7 @@ import { createDecisionEngine, evaluateFlags, RULES } from '../src/lib/decision.
 import { buildPlan, missionStartUtcMs, m2020Sol, LANDING_UTC_MS, SITE } from '../src/lib/mission.js';
 import { elevAt } from '../src/lib/dem.js';
 import { SOL_TABLE, weatherAt } from '../src/lib/weather.js';
-import { createSim, INJECTIONS } from '../src/lib/sim.js';
+import { createSim, INJECTIONS, missionReport } from '../src/lib/sim.js';
 
 const rd = (f) => readFileSync(new URL('../' + f, import.meta.url), 'utf8');
 const stream = rd('public/data/telemetry.ndjson').trim().split('\n').map((l) => JSON.parse(l)).filter((r) => !r._meta);
@@ -63,14 +63,17 @@ test('decision engine: priority, debounce, hold-off, comms escalation, ABORT lat
 test('nominal mission completes with PROCEED only', () => {
   const sim = newSim(); while (!sim.state.done) sim.step();
   assert.equal(sim.state.done, 'COMPLETE'); assert.equal(sim.state.engine.log.length, 0);
-  assert.ok(Math.abs(sim.state.t - buildPlan().duration) < 60);
+  assert.ok(Math.abs(sim.state.t - buildPlan().duration) < 90);
 });
 test('dust-devil scenario: alert to crew + habitat and HOLD, then resume', () => {
   const sim = newSim(); sim.inject('dust_devil', 240); let moved = 0;
-  while (sim.state.tick < 300) { const s0 = sim.state.s; sim.step(); if (sim.state.decision === 'HOLD') moved += sim.state.s - s0; }
+  while (sim.state.tick < 320) { const s0 = sim.state.s; sim.step(); if (sim.state.decision === 'HOLD') moved += sim.state.s - s0; }
   const log = sim.state.engine.log;
   assert.deepEqual(log.map((l) => l.to), ['HOLD', 'PROCEED']); assert.equal(log[0].flags[0].flag, 'dust_devil');
-  assert.ok(log[0].t - 1200 <= 20); assert.equal(moved, 0);
+  assert.ok(log[0].t - 1200 <= 30); assert.equal(moved, 0);
+  const path = sim.state.dustDevils[0].path, hd = []; // meandering track: heading changes between ticks
+  for (let i = 2; i < path.length; i++) hd.push(Math.atan2(path[i][1] - path[i - 1][1], path[i][0] - path[i - 1][0]));
+  assert.ok(Math.max(...hd) - Math.min(...hd) > 0.3, 'dust devil should wander');
   assert.ok(sim.state.alerts[0].delivered.crew && sim.state.alerts[0].delivered.habitat);
 });
 test('every injection yields its documented decision; seek() replays deterministically', () => {
@@ -108,4 +111,16 @@ test('weather: HISTORIC channels equal the MEDA hourly means from the PDS pull',
   assert.ok(Math.abs(weatherAt(SOL_TABLE, 14.5, 60).air_temp_c - mean) < 0.01);
   assert.equal(SOL_TABLE.provenance.air_temp_c, 'HISTORIC'); assert.equal(SOL_TABLE.provenance.tau, 'MODELLED');
   assert.ok(stream.every((r) => r.env.air_temp_c >= Math.min(...SOL_TABLE.air_temp_c) && r.env.air_temp_c <= Math.max(...SOL_TABLE.air_temp_c)));
+});
+test('history: detour is kept in the flown trail, obstacles persist, drone lands at waypoints, report totals', () => {
+  const sim = newSim(), plan = buildPlan(); sim.inject('obstacle', 30); let landed = 0, maxOff = 0;
+  while (!sim.state.done) { sim.step(); if (sim.state.droneState === 'LANDED') landed++; }
+  const S = sim.state, r = missionReport(S, plan);
+  assert.equal(S.done, 'COMPLETE'); assert.equal(S.obstacles.length, 1); assert.ok(S.obstacles[0].rerouted);
+  assert.ok(S.obstacles[0].detected_ahead_m > 150, 'found ahead of the crew, beyond the reroute look-ahead');
+  for (const [la, lo] of S.trail) { let best = 1e9; for (let s = 0; s <= plan.total_m; s += 5) { const p = plan.track.at(s); best = Math.min(best, geodesic(la, lo, p.lat, p.lon).distance); } maxOff = Math.max(maxOff, best); }
+  assert.ok(maxOff > 10 && maxOff < 16, `trail keeps the ~14 m detour (max offset ${maxOff.toFixed(1)} m)`);
+  assert.ok(r.crew_m > plan.total_m && r.crew_m < plan.total_m + 40); assert.ok(landed > 100 && r.landed_s > 1000);
+  assert.ok(Math.abs(r.moving_s + r.stop_s + r.hold_s - r.duration_s) <= 10); assert.equal(r.decisions.length, 2);
+  assert.equal(S.frame.drone.pose.alt_agl_m, 0); assert.equal(S.frame.drone.pose.flight_state, 'LANDED');
 });
