@@ -113,7 +113,7 @@ export function initC(app) {
     app.slots.mode.replaceChildren(h('.mode.seg.glass', {}, ui.views));
     ui.play = h('button.round', { title: 'Play / pause', onclick: () => setPlaying(!playing) });
     ui.planTicks = Math.ceil(p.duration / sim.dt); ui.endTick = null;
-    ui.slider = h('input', { type: 'range', min: 0, max: ui.planTicks, value: 0, oninput: (e) => { sim.seek(+e.target.value); resync(); } });
+    ui.slider = h('input', { type: 'range', min: 0, max: ui.planTicks, value: 0, oninput: (e) => { seekProgress(+e.target.value); resync(); } });
     ui.time = h('span.t', {}, '');
     ui.speeds = SPEEDS.map((v) => h(`button${v === speed ? '.on' : ''}`, { onclick: () => { speed = v; ui.speeds.forEach((b, i) => b.classList.toggle('on', SPEEDS[i] === v)); } }, `${v}×`));
     // Simulation tools live in a black footer docked under the mission view, so they read as a demo harness around
@@ -137,6 +137,10 @@ export function initC(app) {
     setDockOpen(dockOpen);
     sidePanels();
   }
+  // The playback bar shows mission progress, not raw ticks: time spent in HOLD does not advance it, so the thumb
+  // freezes while the crew is held and reaches the end exactly when the rover does.
+  const progress = (st) => st.tick - Math.round(st.stats.hold_s / sim.dt);
+  function seekProgress(v) { sim.seek(0); while (progress(S()) < v && !S().done) sim.step(); }
   function restart() { sim.reset(); ui.endTick = null; resync(); setPlaying(true); }
   function inject(k) {
     if (S().done) return toast('Mission ended. Restart to simulate more conditions');
@@ -221,11 +225,11 @@ export function initC(app) {
       ui.log.replaceChildren(...(logLen ? [...s.engine.log].reverse().map((l) => h('div', {}, h('span.tt', {}, `T+${fmtDur(l.t)}`), h(`b.d-${l.to}`, {}, l.to), ` from ${l.from}`, h('br'), h('small', {}, l.flags.length ? l.flags.map((x) => `${FLAGS[x.flag]} (${x.detail})`).join('; ') : 'All flags clear')))
         : [h('div', { style: 'color:var(--dim)' }, 'No changes; PROCEED since departure.')]));
     }
-    // Scrub range = the actual mission: the plan, stretched while HOLDs make it longer, and the real end tick once
-    // the mission has finished (remembered so you can scrub back and forth over the completed run).
-    if (s.done) ui.endTick = s.tick;
-    const maxTick = s.done ? s.tick : Math.max(ui.endTick ?? ui.planTicks, s.tick); if (+ui.slider.max !== maxTick) ui.slider.max = maxTick;
-    ui.slider.value = s.tick; ui.time.textContent = `T+${fmtDur(s.t)}  ·  ${hms(mt.lmst, false)} LMST`;
+    // Scrub range = mission progress (held time excluded): the plan, stretched if detours make it longer, and the real
+    // end once the mission has finished (remembered so you can scrub back and forth over the completed run).
+    const pr = progress(s); if (s.done) ui.endTick = pr;
+    const maxTick = s.done ? pr : Math.max(ui.endTick ?? ui.planTicks, pr); if (+ui.slider.max !== maxTick) ui.slider.max = maxTick;
+    ui.slider.value = pr; ui.time.textContent = `T+${fmtDur(s.t)}  ·  ${hms(mt.lmst, false)} LMST`;
     if (!!s.done !== !!ui.report.firstChild) { // mission over: report button under the status, everything else dimmed behind it
       ui.report.replaceChildren(s.done ? h('button.reportbtn.glass', { onclick: showReport }, icon('doc', 22), 'Show the Report') : '');
       ui.scrim.classList.toggle('on', !!s.done); ui.decision.classList.toggle('done', !!s.done);

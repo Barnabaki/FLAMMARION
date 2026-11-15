@@ -32,7 +32,8 @@ button.cta.green:hover:not(:disabled) { background: linear-gradient(#52e87b, #34
 
 /* ---- chrome ------------------------------------------------------------------------------------------------- */
 .topbar { position: absolute; top: 0; left: 0; right: 0; height: 64px; display: flex; align-items: center; gap: 20px; padding: 0 28px; background: linear-gradient(rgba(5, 5, 8, .7), rgba(5, 5, 8, 0)); }
-.brand { letter-spacing: .3em; font-size: 12.5px; font-weight: 600; }
+.brand { letter-spacing: .3em; font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+.brand-demo { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; font-weight: 650; color: var(--amber); margin-right: 12px; } /* same as the DEMO tag in the simulation footer */
 .crumbs { display: flex; gap: 12px; align-items: center; color: var(--dim); border-left: 1px solid var(--hair); padding-left: 20px; font-size: 14px; }
 .crumbs a { color: var(--dim); cursor: pointer; } .crumbs a:hover { color: var(--fg); } .crumbs .cur { color: var(--fg); font-weight: 500; } .crumbs .sep { opacity: .35; }
 .topbar .sp { flex: 1; }

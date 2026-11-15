@@ -27,7 +27,7 @@ const A_STAGES = ['mars', 'regions', 'region', 'sector', 'site'];
 const crumbs = h('.crumbs'), cursor = h('span', {}, '');
 const guide = h('.guide', {}, [['zoom', 'Zoom in'], ['scroll', 'Scroll'], ['pinch', 'Pinch'], ['tap', 'Click']].map(([i, t]) => h('span', {}, icon(i, 17), t)));
 ui.append(
-  h('.topbar', {}, h('.brand', {}, 'FLAMMARION'), crumbs, h('.sp'), h('button.glass', { onclick: () => openSources() }, 'Data sources')),
+  h('.topbar', {}, h('.brand', {}, h('span.brand-demo', {}, 'Demo'), 'FLAMMARION'), crumbs, h('.sp'), h('button.glass', { onclick: () => openSources() }, 'Data sources')),
   h('.shade'), app.slots.mode, app.slots.left, app.slots.right, app.slots.center, app.slots.bottom, guide,
   h('.zoom.glass', {}, h('button', { title: 'Zoom in', onclick: () => zoom(0.5) }, icon('plus', 17)), h('button', { title: 'Zoom out', onclick: () => zoom(2) }, icon('minus', 17)),
     h('button', { title: 'Full planet view', onclick: () => setStage('mars') }, icon('target', 17))),
