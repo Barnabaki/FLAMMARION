@@ -58,9 +58,11 @@ p { margin: 0 0 8px; color: var(--dim); } p.note { font-size: 11.5px; color: var
 /* ---- rows, citations ---------------------------------------------------------------------------------------- */
 .row { display: flex; align-items: center; gap: 12px; padding: 6px 0; } .row .lab { color: var(--fg); opacity: .86; flex: 1; min-width: 0; }
 .row .cite { font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; } .unit { font-weight: 400; color: var(--dim); font-size: .88em; }
-.cite { cursor: pointer; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 3px; text-decoration-thickness: 1px; transition: text-decoration-color .15s, color .15s; border-radius: 3px; }
-.cite:hover, .cite:focus-visible { text-decoration-color: currentColor; color: #fff; outline: none; }
-.cite:hover::after, .cite:focus-visible::after { content: attr(data-prov); font-size: 9px; font-weight: 500; letter-spacing: .1em; margin-left: 7px; color: var(--dim); }
+.cite { cursor: pointer; position: relative; display: inline-block; border-radius: 3px; }
+.cite:hover, .cite:focus-visible, .cite:hover *, .cite:focus-visible * { color: transparent !important; outline: none; }
+.cite:hover::after, .cite:focus-visible::after { content: attr(data-prov); position: absolute; left: 0; top: 50%; transform: translateY(-50%); white-space: nowrap; color: #fff; font-size: 11.5px; font-weight: 600; letter-spacing: .1em;
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; text-decoration-color: rgba(255, 255, 255, .6); }
+.row .cite:hover::after, .row .cite:focus-visible::after, .crit .cite:hover::after, .crit .cite:focus-visible::after { left: auto; right: 0; }
 .ok { color: var(--go); } .warn { color: var(--amber); } .bad { color: var(--bad); }
 .tag { font-size: 10px; letter-spacing: .1em; color: var(--faint); font-weight: 500; }
 ul.dots { list-style: none; margin: 0; padding: 0; } ul.dots li { display: flex; gap: 14px; align-items: center; padding: 5px 0; } ul.dots li::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--fg); opacity: .85; flex: none; margin-left: 5px; }
@@ -89,7 +91,6 @@ ul.dots { list-style: none; margin: 0; padding: 0; } ul.dots li { display: flex;
 .tile { aspect-ratio: 1; border-radius: 20px; padding: 13px 14px; display: flex; flex-direction: column; background: linear-gradient(160deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.05)); border: 1px solid rgba(255, 255, 255, 0.14); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16); }
 .tile .tl { display: flex; align-items: center; gap: 6px; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); font-weight: 500; } .tile .tl svg.ic { width: 14px; height: 14px; }
 .tile .tv { font-size: 27px; font-weight: 600; letter-spacing: -0.02em; margin-top: 5px; font-variant-numeric: tabular-nums; line-height: 1.05; } .tile .tv .unit { font-size: 13px; }
-.tile .tv .cite:hover::after { display: block; margin: 2px 0 0; }
 .tile .tg { margin-top: auto; } .tile .ts { font-size: 10.5px; color: var(--dim); margin-top: 5px; font-variant-numeric: tabular-nums; white-space: nowrap; } .tile svg.g { display: block; width: 100%; }
 .wplist { list-style: none; margin: 0; padding: 0; } .wplist li { display: grid; grid-template-columns: 20px 1fr auto; gap: 8px; align-items: start; padding: 6px 6px; border-radius: 12px; cursor: pointer; position: relative; margin: 0 -6px; }
 .wplist li:hover, .wplist li.sel { background: rgba(255, 255, 255, .1); } .wplist .dot { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--fg); margin: 5px 0 0 5px; }
@@ -121,7 +122,7 @@ details summary { color: var(--dim); cursor: pointer; margin: 14px 0 4px; font-s
 .alert b { letter-spacing: .14em; font-size: 10.5px; font-weight: 600; display: flex; align-items: center; gap: 7px; margin-bottom: 4px; } .alert small { color: var(--dim); }
 .alert .to { display: flex; gap: 14px; font-size: 11.5px; color: var(--dim); margin-top: 7px; flex-wrap: wrap; } .alert .to span { display: inline-flex; align-items: center; gap: 4px; } .alert .to svg.ic { width: 13px; height: 13px; color: var(--go); }
 .simtools { position: absolute; left: 388px; right: 388px; bottom: 44px; padding: 14px 18px 15px; border-radius: 24px; }
-.simtools .hd { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; } .simtools .hd b { font-size: 10.5px; letter-spacing: .16em; font-weight: 600; white-space: nowrap; } .simtools .hd span { color: var(--faint); font-size: 11.5px; }
+.simtools .hd { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; } .simtools .hd span { flex: 1; } .simtools .hd button { font-size: 12px; padding: 5px 12px; white-space: nowrap; } .simtools .hd b { font-size: 10.5px; letter-spacing: .16em; font-weight: 600; white-space: nowrap; } .simtools .hd span { color: var(--faint); font-size: 11.5px; }
 .simtools .seg button { padding: 5px 11px; font-size: 12.5px; } .injects { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 11px; } .injects button { font-size: 12px; padding: 5px 12px; } .injects button.dd { border-color: rgba(255, 159, 10, .7); color: var(--amber); }
 .log { font-size: 12px; max-height: 130px; overflow: auto; scrollbar-width: none; } .log div { padding: 6px 0; border-top: 1px solid rgba(255, 255, 255, .08); } .log div:first-child { border: 0; } .log .tt { color: var(--dim); font-variant-numeric: tabular-nums; margin-right: 8px; } .log small { color: var(--dim); }
 pre.feed { font: 10.5px/1.4 ui-monospace, "SF Mono", Menlo, monospace; color: var(--dim); max-height: 150px; overflow: auto; margin: 0; white-space: pre-wrap; }

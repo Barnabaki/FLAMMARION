@@ -42,6 +42,7 @@ export function createViewer(container) {
   // Natural Martian tones: a little more saturation and contrast, no hue shift.
   layers.viking.saturation = 1.38; layers.viking.contrast = 1.14; layers.viking.gamma = 0.94; layers.viking.hue = 0.09;
   layers.mola.show = false;
+  for (const k of ['ctx_regional', 'ctx', 'hirise']) { layers[k].colorToAlpha = Cesium.Color.BLACK; layers[k].colorToAlphaThreshold = 0.002; }
   // Soft limb haze (no neon): Cesium's sky atmosphere on the Mars ellipsoid, shifted from blue to dusty orange.
   try { const sky = new Cesium.SkyAtmosphere(Cesium.Ellipsoid.MARS); sky.hueShift = 0.47; sky.saturationShift = 0.15; sky.brightnessShift = -0.05; scene.skyAtmosphere = sky; } catch { /* optional */ }
   return { viewer, layers };

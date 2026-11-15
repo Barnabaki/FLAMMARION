@@ -106,10 +106,9 @@ export function initC(app) {
     ui.time = h('span.t', {}, '');
     ui.speeds = SPEEDS.map((v) => h(`button${v === speed ? '.on' : ''}`, { onclick: () => { speed = v; ui.speeds.forEach((b, i) => b.classList.toggle('on', SPEEDS[i] === v)); } }, `${v}×`));
     app.slots.bottom.replaceChildren(h('.simtools.glass', {},
-      h('.hd', {}, h('b', {}, 'SIMULATION TOOLS'), h('span', {}, 'These controls simulate mission conditions to show how the flight software would respond during a real mission.')),
+      h('.hd', {}, h('b', {}, 'SIMULATION TOOLS'), h('span', {}, 'These controls simulate mission conditions to show how the flight software would respond during a real mission.'), h('button', { onclick: restart }, icon('restart', 15), 'Restart')),
       h('.controls', {}, ui.play, h('.seg.glass', {}, ui.speeds), ui.slider, ui.time),
-      h('.injects', {}, Object.entries(INJECTIONS).map(([k, d]) => h(`button${k === 'dust_devil' ? '.dd' : ''}`, { title: `Expected response: ${d.expect}`, onclick: () => inject(k) }, d.label)),
-        h('span', { style: 'flex:1' }), h('button', { onclick: restart }, icon('restart', 15), 'Restart'))));
+      h('.injects', {}, Object.entries(INJECTIONS).map(([k, d]) => h(`button${k === 'dust_devil' ? '.dd' : ''}`, { title: `Expected response: ${d.expect}`, onclick: () => inject(k) }, d.label)))));
     sidePanels();
   }
   function restart() { sim.reset(); resync(); setPlaying(true); }
