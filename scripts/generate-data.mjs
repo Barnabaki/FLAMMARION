@@ -1,5 +1,6 @@
 // Deterministic (seeded) generator for every data file the demo replays. Run: npm run generate
 import { writeFileSync, mkdirSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { rng, LOC_SIGMA_M } from '../src/lib/mars.js';
 import { marsTime } from '../src/lib/marsTime.js';
 import { SOL_TABLE, REMS_TABLE, weatherAt } from '../src/lib/weather.js';
@@ -8,7 +9,7 @@ import { DEM_INFO } from '../src/lib/dem.js';
 import { RULES } from '../src/lib/decision.js';
 import { createSim } from '../src/lib/sim.js';
 
-const out = new URL('../public/data/', import.meta.url).pathname;
+const out = fileURLToPath(new URL('../public/data/', import.meta.url));
 mkdirSync(out, { recursive: true });
 const plan = buildPlan(), t0 = missionStartUtcMs(), dt = RULES.tickS;
 const iso = (s) => new Date(t0 + s * 1000).toISOString();
@@ -80,7 +81,7 @@ while (sim.state.tick < 320) {
 }
 writeFileSync(out + 'dustdevil_scenario.ndjson', lines.map((x) => JSON.stringify(x)).join('\n') + '\n');
 writeFileSync(out + 'dustdevil_scenario_decisions.json', JSON.stringify({ injected_at_tick: 240, decision_log: sim.state.engine.log, alerts: sim.state.alerts }, null, 1));
-mkdirSync(new URL('../examples/', import.meta.url).pathname, { recursive: true });
-writeFileSync(new URL('../examples/drone_message_nominal.json', import.meta.url).pathname, JSON.stringify(nominal, null, 2));
-writeFileSync(new URL('../examples/drone_message_dust_devil.json', import.meta.url).pathname, JSON.stringify(example, null, 2));
+mkdirSync(fileURLToPath(new URL('../examples/', import.meta.url)), { recursive: true });
+writeFileSync(fileURLToPath(new URL('../examples/drone_message_nominal.json', import.meta.url)), JSON.stringify(nominal, null, 2));
+writeFileSync(fileURLToPath(new URL('../examples/drone_message_dust_devil.json', import.meta.url)), JSON.stringify(example, null, 2));
 console.log(`route ${plan.total_m.toFixed(1)} m, ${Math.round(plan.duration / 60)} min, ${stream.length} telemetry records, scenario log:`, sim.state.engine.log.map((l) => `${l.t}s ${l.from}→${l.to}`).join(', '));
