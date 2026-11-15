@@ -92,7 +92,7 @@ export function batterySoc(t, s, tempC = -40) {
 export const GO_CRITERIA = [
   { key: 'air_temp_c', label: 'Min air temperature', unit: '°C', limit: -70, test: (v) => v >= -70, agg: 'min', fmt: (v) => v.toFixed(0), rule: '≥ −70 °C' },
   { key: 'wind_ms', label: 'Max sustained wind', unit: 'm/s', limit: 15, test: (v) => v <= 15, agg: 'max', fmt: (v) => v.toFixed(1), rule: '≤ 15 m/s' },
-  { key: 'tau', label: 'Dust optical depth τ', unit: '', limit: 1.0, test: (v) => v <= 1.0, agg: 'max', fmt: (v) => v.toFixed(2), rule: '≤ 1.0' },
+  { key: 'tau', label: 'Dust optical depth 𝜏', unit: '', limit: 1.0, test: (v) => v <= 1.0, agg: 'max', fmt: (v) => v.toFixed(2), rule: '≤ 1.0' },
   { key: 'vortex_per_h', label: 'Peak vortex rate', unit: '/h', limit: 2.0, test: (v) => v <= 2.0, agg: 'max', fmt: (v) => v.toFixed(1), rule: '≤ 2.0 /h' },
   { key: 'sun_elev_deg', label: 'Min Sun elevation', unit: '°', limit: 10, test: (v) => v >= 10, agg: 'min', fmt: (v) => v.toFixed(0), rule: '≥ 10° (daylight)' },
   { key: 'battery_pct', label: 'Battery reserve at arrival', unit: '%', limit: 30, test: (v) => v >= 30, agg: 'min', fmt: (v) => v.toFixed(0), rule: '≥ 30 %' },

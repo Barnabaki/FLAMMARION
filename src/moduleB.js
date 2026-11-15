@@ -44,10 +44,10 @@ export function initB(app) {
     app.slots.left.replaceChildren(h('.panel.left.glass', {},
       h('.toprow', {}, h('button', { onclick: () => app.setStage('site') }, icon('back', 15), 'Back')),
       h('p.eyebrow', {}, 'Route planned'), h('h1', {}, 'Forecast'),
-      h('p', {}, `Departure 09:30 local, Ls ${samples[0].ls.toFixed(0)}°. Weather is replayed from Perseverance measurements of sols ${table.sols[0]}–${table.sols.at(-1)} — archived, not current.`),
+      h('p', {}, `Departure 09:30 local, Ls ${samples[0].ls.toFixed(0)}°. Weather is replayed from Perseverance measurements of sols ${table.sols[0]}–${table.sols.at(-1)}.`),
       h('h2', {}, 'At the playhead'), M('lmst', 'Local time', 'mars24', '', 'clock'),
       M('air', 'Air temperature', srcOf('air_temp_c'), '°C', 'thermo'), M('gnd', 'Ground temperature', srcOf('ground_temp_c'), '°C', 'thermo'), M('prs', 'Pressure', srcOf('pressure_pa'), 'Pa', 'gauge'),
-      M('wind', 'Wind speed', srcOf('wind_ms'), 'm/s', 'wind'), M('tau', 'Dust opacity', whatIf ? 'vehicle' : srcOf('tau'), 'τ', 'dust'), M('sun', 'Sun elevation', 'mars24', '°', 'sun'),
+      M('wind', 'Wind speed', srcOf('wind_ms'), 'm/s', 'wind'), M('tau', 'Dust opacity', whatIf ? 'vehicle' : srcOf('tau'), '𝜏', 'dust'), M('sun', 'Sun elevation', 'mars24', '°', 'sun'),
       h('h2', {}, 'Predicted mission'), M('dist', 'Distance', 'geodesy', '', 'route'), M('time', 'Elapsed', 'vehicle', '', 'clock'), M('bat', 'Battery', 'vehicle', '%', 'battery'), M('act', 'Activity', 'vehicle', '', 'flag'),
       h('details', {}, h('summary', {}, 'Compare with Curiosity at Gale crater'), M('rT', 'Air temperature', 'rems', '°C'), M('rP', 'Pressure', 'rems', 'Pa'), M('rW', 'Wind speed', 'rems', 'm/s'),
         h('p.note', {}, `A different site ~3,760 km away, MSL sols ${REMS_TABLE.sols[0]}–${REMS_TABLE.sols.at(-1)}. Not used in the assessment.`))));
@@ -55,7 +55,7 @@ export function initB(app) {
       h('p.eyebrow', {}, 'Crew feedback'), h(`.gonogo.${go ? 'go' : 'nogo'}`, {}, go ? 'GO' : 'NO-GO'),
       h('p', {}, go ? `All ${crit.length} conditions hold for the whole ${fmtDur(p.duration)} traverse.` : `Blocked by ${fails.map((f) => f.label.toLowerCase()).join(' and ')}.`),
       h('div', { style: 'margin:14px 0 6px' }, crit.map((c) => h(`.crit${c.pass ? '' : '.fail'}`, {}, h('i'), h('span', {}, c.label, h('small', {}, c.rule)), cite(`${c.fmt(c.value)} ${c.unit}`, whatIf && c.key === 'tau' ? 'vehicle' : srcOf(c.key), c.pass ? 'ok' : 'bad')))),
-      h('label.switch', {}, h('input', { type: 'checkbox', ...(whatIf ? { checked: true } : {}), onchange: (e) => { whatIf = e.target.checked; build(); } }), 'What if a regional dust event raises τ to 1.4?'),
+      h('label.switch', {}, h('input', { type: 'checkbox', ...(whatIf ? { checked: true } : {}), onchange: (e) => { whatIf = e.target.checked; build(); } }), 'What if a regional dust event raises 𝜏 to 1.4?'),
       h('button.cta.green', { ...(go && !whatIf ? {} : { disabled: true }), onclick: () => app.setStage('intra') }, icon('play', 16), 'Start Mission'),
       !go || whatIf ? h('p.note', { style: 'margin-top:10px' }, whatIf ? 'What-if scenario active — clear it to start the mission.' : 'Mission start is blocked while the assessment is NO-GO.') : null));
     ui.play = h('button.round', { title: 'Play / pause', onclick: () => { if (t >= p.duration) t = 0; setPlay(!playing); } });

@@ -145,9 +145,9 @@ export function createSim({ plan, stream, startUtcMs }) {
     // Motion
     const L = plan.legs, st = S.stats;
     let moving = false, status = 'Driving', speed = 0;
-    if (res.decision === 'ABORT') { S.done = 'ABORTED'; status = 'ABORT — return to habitat'; }
-    else if (S.s >= track.total - 1e-6) { if (S.droneAlt <= 0) { S.done = 'COMPLETE'; status = 'Arrived — mission complete'; } else { status = 'Arrived — drone landing'; st.stop_s += dt; } }
-    else if (res.decision === 'HOLD') { status = 'HOLD — stationary'; st.hold_s += dt; }
+    if (res.decision === 'ABORT') { S.done = 'ABORTED'; status = 'ABORT: return to habitat'; }
+    else if (S.s >= track.total - 1e-6) { if (S.droneAlt <= 0) { S.done = 'COMPLETE'; status = 'Arrived: mission complete'; } else { status = 'Arrived: drone landing'; st.stop_s += dt; } }
+    else if (res.decision === 'HOLD') { status = 'HOLD: stationary'; st.hold_s += dt; }
     else if (S.stopLeft > 0) { S.stopLeft -= dt; status = `Measurements at ${L[S.wp].id}`; st.stop_s += dt; }
     else {
       moving = true; if (res.decision === 'REROUTE') { status = 'Rerouting'; st.reroute_s += dt; }

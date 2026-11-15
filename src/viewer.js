@@ -49,7 +49,9 @@ export function createViewer(container) {
 }
 
 export const deg = (lon, lat, h = 0) => Cesium.Cartesian3.fromDegrees(lon, lat, h);
-export const rectOf = (q, pad = 0) => Cesium.Rectangle.fromDegrees(wrap(q.west) - pad, q.south - pad, q.east === 360 && q.west === 0 ? 180 : wrap(q.east) + pad, q.north + pad);
+export const rectOf = (q, pad = 0) => q.west === 0 && q.east === 360 // polar caps span every longitude: −180…180, not 0…180
+  ? Cesium.Rectangle.fromDegrees(-180, Math.max(-90, q.south - pad), 180, Math.min(90, q.north + pad))
+  : Cesium.Rectangle.fromDegrees(wrap(q.west) - pad, q.south - pad, wrap(q.east) + pad, q.north + pad);
 export const wrap = (lon) => (lon > 180 ? lon - 360 : lon);
 
 /** Entity.show is a plain boolean (not a Property): register a predicate that is re-evaluated before every frame. */
